@@ -1,323 +1,128 @@
 package si.um.feri.__Backend.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import si.um.feri.__Backend.model.Listing;
+import si.um.feri.__Backend.model.RawListing;
 import si.um.feri.__Backend.repository.ListingRepository;
-
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ListingService {
-
     private final ListingRepository listingRepository;
-
     public ListingService(ListingRepository listingRepository) {
         this.listingRepository = listingRepository;
     }
 
+    //  DATA DISPLAY FROM MONGODB
     public List<Listing> getAllListings() {
         return listingRepository.findAll();
     }
-
-    //-------------------------//
-    // ec.europa.eu API CALLS  //
-    //-------------------------//
-    //  type: 0 - TENDERS, 1,2,8 - GRANTS, 6 - FUNDING UPDATES
-    //  status: 31094502 - OPEN, 31094503 - CLOSED, 31094501 - FORTHCOMING
-    //  frameworkProgramme: 43108390 - Horizon Europe
-
-    public void fetchOpenListings() {
-        String url = "https://api.tech.ec.europa.eu/search-api/prod/rest/search?apiKey=SEDIA&text=***&pageSize=100";
-
-        String body = """
-        {
-            "bool": {
-                "must": [
-                    { "terms": { "type": ["0"] } },
-                    { "terms": { "status": ["31094502"] } },
-                    { "terms": { "frameworkProgramme": ["43108390"] } }
-                ]
-            },
-            "sort": {
-                "order": "DESC",
-                "field": "startDate"
-            }
-        }
-        """;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<>(body, headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
-
-        System.out.println(response.getBody());
-
-        List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody().get("results");
-
-        if (results != null) {
-            List<Listing> listings = new ArrayList<>();
-            for (Map<String, Object> r : results) {
-                Listing f = new Listing();
-                Map<String, Object> metadata = (Map<String, Object>) r.get("metadata");
-
-                f.setReference((String) r.get("reference"));
-                f.setUrl((String) r.get("url"));
-                f.setSummary((String) r.get("summary"));
-                f.setContent((String) r.get("content"));
-                f.setLanguage((String) r.get("language"));
-
-                if (metadata != null) {
-                    f.setCallIdentifier((List<String>) metadata.get("callIdentifier"));
-                    f.setKeywords((List<String>) metadata.get("keywords"));
-                    f.setType((List<String>) metadata.get("type"));
-                    f.setTypeMGA((List<String>) metadata.get("typeOfMGAs"));
-                    f.setFrameworkProgramme((List<String>) metadata.get("frameworkProgramme"));
-                    f.setIdentifier((List<String>) metadata.get("identifier"));
-                    f.setProgrammePeriod((List<String>) metadata.get("programmePeriod"));
-                    f.setDeadlineDate((List<String>) metadata.get("deadlineDate"));
-                    f.setDeadlineModel((List<String>) metadata.get("deadlineModel"));
-                    f.setTitle((List<String>) metadata.get("title"));
-                }
-                listings.add(f);
-            }
-            listingRepository.saveAll(listings);
-        }
+    public List<Listing> getForthcomingListings() {
+        return listingRepository.findAll().stream()
+                .filter(l -> "31094501".equalsIgnoreCase(l.getStatus()))
+                .collect(Collectors.toList());
+    }
+    public List<Listing> getOpenListings() {
+        return listingRepository.findAll().stream()
+                .filter(l -> "31094502".equalsIgnoreCase(l.getStatus()))
+                .collect(Collectors.toList());
+    }
+    public List<Listing> getClosedListings() {
+        return listingRepository.findAll().stream()
+                .filter(l -> "31094503".equalsIgnoreCase(l.getStatus()))
+                .collect(Collectors.toList());
     }
 
-    public void fetchForthcomingListings() {
-        String url = "https://api.tech.ec.europa.eu/search-api/prod/rest/search?apiKey=SEDIA&text=***&pageSize=100";
-
-        String body = """
-        {
-            "bool": {
-                "must": [
-                    {
-                        "terms": {
-                            "type": [
-                                "0"
-                            ]
-                        }
-                    },
-                    {
-                        "terms": {
-                            "status": [
-                                "31094501"
-                            ]
-                        }
-                    },
-                    {
-                        "terms": {
-                            "frameworkProgramme": [
-                                "43108390"
-                            ]
-                        }
-                    }
-                ]
-            }
-            "sort": {
-                "order": "DESC",
-                "field": "startDate"
-            }
-        }
-        """;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<>(body, headers);
-
+    //  DATA FETCHING FROM API
+    public void fetchListings(String queryFileName) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        System.out.println(response.getBody());
+        Resource queryFile = new ClassPathResource("filters/" + queryFileName);
+        Resource sortFile = new ClassPathResource("filters/sortQuery.json");
 
-        List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody().get("results");
+        ObjectMapper mapper = new ObjectMapper();
+        int pageSize = 25;
+        int totalPages = 1;
 
-        if (results != null) {
-            List<Listing> listings = new ArrayList<>();
-            for (Map<String, Object> r : results) {
-                Listing f = new Listing();
-                Map<String, Object> metadata = (Map<String, Object>) r.get("metadata");
+        for (int page = 1; page <= totalPages; page++) {
+            String url = "https://api.tech.ec.europa.eu/search-api/prod/rest/search" +
+                    "?apiKey=SEDIA&text=***&pageSize=" + pageSize + "&pageNumber=" + page;
 
-                f.setReference((String) r.get("reference"));
-                f.setUrl((String) r.get("url"));
-                f.setSummary((String) r.get("summary"));
-                f.setContent((String) r.get("content"));
-                f.setLanguage((String) r.get("language"));
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("query", queryFile);
+            body.add("sort", sortFile);
 
-                if (metadata != null) {
-                    f.setCallIdentifier((List<String>) metadata.get("callIdentifier"));
-                    f.setKeywords((List<String>) metadata.get("keywords"));
-                    f.setType((List<String>) metadata.get("type"));
-                    f.setTypeMGA((List<String>) metadata.get("typeOfMGAs"));
-                    f.setFrameworkProgramme((List<String>) metadata.get("frameworkProgramme"));
-                    f.setIdentifier((List<String>) metadata.get("identifier"));
-                    f.setProgrammePeriod((List<String>) metadata.get("programmePeriod"));
-                    f.setDeadlineDate((List<String>) metadata.get("deadlineDate"));
-                    f.setDeadlineModel((List<String>) metadata.get("deadlineModel"));
-                    f.setTitle((List<String>) metadata.get("title"));
-                }
-                listings.add(f);
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+
+            String jsonBody = response.getBody();
+            saveToMongo(jsonBody);
+
+            if (page == 1) {
+                JsonNode root = mapper.readTree(jsonBody);
+                int totalResults = root.path("totalResults").asInt();
+                totalPages = (int) Math.ceil((double) totalResults / pageSize);
             }
-            listingRepository.saveAll(listings);
         }
     }
-    public void fetchClosedListings() {
-        String url = "https://api.tech.ec.europa.eu/search-api/prod/rest/search?apiKey=SEDIA&text=***&pageSize=100";
+    private void saveToMongo(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(json);
+        JsonNode itemsNode = root.path("results");
 
-        String body = """
-        {
-            "bool": {
-                "must": [
-                    {
-                        "terms": {
-                            "type": [
-                                "0"
-                            ]
-                        }
-                    },
-                    {
-                        "terms": {
-                            "status": [
-                                "31094503"
-                            ]
-                        }
-                    },
-                    {
-                        "terms": {
-                            "frameworkProgramme": [
-                                "43108390"
-                            ]
-                        }
-                    }
-                ]
-            }
-            "sort": {
-                "order": "DESC",
-                "field": "startDate"
-            }
-        }
-        """;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<>(body, headers);
+        if (!itemsNode.isArray()) return;
+        List<Listing> listings = new ArrayList<>();
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
+        for (JsonNode itemNode : itemsNode) {
+            RawListing raw = mapper.treeToValue(itemNode, RawListing.class);
+            Listing listing = new Listing();
+            listing.setReference(raw.getReference());
+            listing.setSummary(raw.getSummary());
 
-        System.out.println(response.getBody());
+            RawListing.Metadata m = raw.getMetadata();
+            if (m != null) {
+                listing.setTitle(first(m.getTitle()));
+                listing.setCallIdentifier(first(m.getCallIdentifier()));
+                listing.setCallTitle(first(m.getCallTitle()));
+                listing.setStartDate(first(m.getStartDate()));
+                listing.setDeadlineDate(first(m.getDeadlineDate()));
 
-        List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody().get("results");
+                String identifier = first(m.getIdentifier());
+                listing.setIdentifier(identifier);
 
-        if (results != null) {
-            List<Listing> listings = new ArrayList<>();
-            for (Map<String, Object> r : results) {
-                Listing f = new Listing();
-                Map<String, Object> metadata = (Map<String, Object>) r.get("metadata");
-
-                f.setReference((String) r.get("reference"));
-                f.setUrl((String) r.get("url"));
-                f.setSummary((String) r.get("summary"));
-                f.setContent((String) r.get("content"));
-                f.setLanguage((String) r.get("language"));
-
-                if (metadata != null) {
-                    f.setCallIdentifier((List<String>) metadata.get("callIdentifier"));
-                    f.setKeywords((List<String>) metadata.get("keywords"));
-                    f.setType((List<String>) metadata.get("type"));
-                    f.setTypeMGA((List<String>) metadata.get("typeOfMGAs"));
-                    f.setFrameworkProgramme((List<String>) metadata.get("frameworkProgramme"));
-                    f.setIdentifier((List<String>) metadata.get("identifier"));
-                    f.setProgrammePeriod((List<String>) metadata.get("programmePeriod"));
-                    f.setDeadlineDate((List<String>) metadata.get("deadlineDate"));
-                    f.setDeadlineModel((List<String>) metadata.get("deadlineModel"));
-                    f.setTitle((List<String>) metadata.get("title"));
+                if (identifier != null && !identifier.isBlank()) {
+                    listing.setUrl("https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/" + identifier);
                 }
-                listings.add(f);
+
+//                listing.setDeadlineModel(first(m.getDeadlineModel()));
+//                listing.setProgrammePeriod(first(m.getProgrammePeriod()));
+//                listing.setBudgetOverview(first(m.getBudgetOverview()));
+//                listing.setSupportInfo(first(m.getSupportInfo()));
+//                listing.setSepTemplate(first(m.getSepTemplate()));
+//                listing.setDescriptionByte(first(m.getDescriptionByte()));
+//                listing.setLatestInfo(first(m.getLatestInfos()));
+//                listing.setAction(first(m.getActions()));
+//                listing.setKeywords(m.getKeywords());
+//                listing.setLinks(first(m.getLinks()));
+                listing.setStatus(first(m.getStatus()));
             }
-            listingRepository.saveAll(listings);
+            listings.add(listing);
         }
+        listingRepository.saveAll(listings);
     }
-    public void fetchAllListings() {
-        String url = "https://api.tech.ec.europa.eu/search-api/prod/rest/search?apiKey=SEDIA&text=***&pageSize=100";
-
-        String body = """
-        {
-            "bool": {
-                "must": [
-                    {
-                        "terms": {
-                            "type": [
-                                "0"
-                            ]
-                        }
-                    },
-                    {
-                        "terms": {
-                            "status": [
-                                "31094501",
-                                "31094502",
-                                "31094503"
-                            ]
-                        }
-                    },
-                    {
-                        "terms": {
-                            "frameworkProgramme": [
-                                "43108390"
-                            ]
-                        }
-                    }
-                ]
-            }
-            "sort": {
-                "order": "DESC",
-                "field": "startDate"
-            }
-        }
-        """;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<>(body, headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
-
-        System.out.println(response.getBody());
-
-        List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody().get("results");
-
-        if (results != null) {
-            List<Listing> listings = new ArrayList<>();
-            for (Map<String, Object> r : results) {
-                Listing f = new Listing();
-                Map<String, Object> metadata = (Map<String, Object>) r.get("metadata");
-
-                f.setReference((String) r.get("reference"));
-                f.setUrl((String) r.get("url"));
-                f.setSummary((String) r.get("summary"));
-                f.setContent((String) r.get("content"));
-                f.setLanguage((String) r.get("language"));
-
-                if (metadata != null) {
-                    f.setCallIdentifier((List<String>) metadata.get("callIdentifier"));
-                    f.setKeywords((List<String>) metadata.get("keywords"));
-                    f.setType((List<String>) metadata.get("type"));
-                    f.setTypeMGA((List<String>) metadata.get("typeOfMGAs"));
-                    f.setFrameworkProgramme((List<String>) metadata.get("frameworkProgramme"));
-                    f.setIdentifier((List<String>) metadata.get("identifier"));
-                    f.setProgrammePeriod((List<String>) metadata.get("programmePeriod"));
-                    f.setDeadlineDate((List<String>) metadata.get("deadlineDate"));
-                    f.setDeadlineModel((List<String>) metadata.get("deadlineModel"));
-                    f.setTitle((List<String>) metadata.get("title"));
-                }
-                listings.add(f);
-            }
-            listingRepository.saveAll(listings);
-        }
+    private String first(List<String> list) {
+        return (list != null && !list.isEmpty()) ? list.get(0) : null;
     }
 }

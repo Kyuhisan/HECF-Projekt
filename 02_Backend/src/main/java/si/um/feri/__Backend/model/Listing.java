@@ -11,20 +11,23 @@ import java.util.List;
 public class Listing {
     @Id
     private String reference;
-    private String url;
     private String summary;
-    private String content;
-    private String language;
-    private List<String> callIdentifier;
-    private List<String> keywords;
-    private List<String> type;
-    private List<String> typeMGA;
-    private List<String> frameworkProgramme;
-    private List<String> identifier;
-    private List<String> programmePeriod;
-    private List<String> deadlineDate;
-    private List<String> startDate;
-    private List<String> status;
-    private List<String> deadlineModel;
-    private List<String> title;
+    private String url;
+//    private String latestInfo;
+//    private String sepTemplate;
+//    private List<String> keywords;
+    private String title;
+    private String callIdentifier;
+//      private String links;
+    private String callTitle;
+//    private String descriptionByte;
+    private String identifier;
+//    private String programmePeriod;
+    private String deadlineDate;
+//    private String action;
+//    private String budgetOverview;
+    private String startDate;
+//    private String deadlineModel;
+//    private String supportInfo;
+    private String status;
 }

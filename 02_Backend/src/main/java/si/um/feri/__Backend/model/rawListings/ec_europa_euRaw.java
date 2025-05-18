@@ -1,4 +1,4 @@
-package si.um.feri.__Backend.model;
+package si.um.feri.__Backend.model.rawListings;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -6,7 +6,8 @@ import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RawListing {
+public class ec_europa_euRaw {
+    private String source;
     private String reference;
     private String summary;
     private Metadata metadata;

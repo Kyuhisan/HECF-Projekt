@@ -3,7 +3,6 @@ package si.um.feri.__Backend.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.List;
 
 @Document(collection = "listings")
@@ -30,4 +29,5 @@ public class Listing {
 //    private String deadlineModel;
 //    private String supportInfo;
     private String status;
+    private String source;
 }

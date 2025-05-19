@@ -90,16 +90,16 @@ public class ec_europa_euProvider {
                     listing.setUrl("https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/" + identifier);
                 }
 
-//                listing.setDeadlineModel(first(m.getDeadlineModel()));
-//                listing.setProgrammePeriod(first(m.getProgrammePeriod()));
-//                listing.setBudgetOverview(first(m.getBudgetOverview()));
-//                listing.setSupportInfo(first(m.getSupportInfo()));
-//                listing.setSepTemplate(first(m.getSepTemplate()));
-//                listing.setDescriptionByte(first(m.getDescriptionByte()));
-//                listing.setLatestInfo(first(m.getLatestInfos()));
-//                listing.setAction(first(m.getActions()));
-//                listing.setKeywords(m.getKeywords());
-//                listing.setLinks(first(m.getLinks()));
+                listing.setDeadlineModel(first(m.getDeadlineModel()));
+                listing.setProgrammePeriod(first(m.getProgrammePeriod()));
+                listing.setBudgetOverview(cleanString(first(m.getBudgetOverview())));
+                listing.setSupportInfo(cleanString(first(m.getSupportInfo())));
+                listing.setSepTemplate(cleanString(first(m.getSepTemplate())));
+                listing.setDescriptionByte(cleanString(first(m.getDescriptionByte())));
+                listing.setLatestInfo(cleanString(first(m.getLatestInfos())));
+                listing.setAction(cleanString(first(m.getActions())));
+                listing.setKeywords(m.getKeywords());
+                listing.setLinks(cleanString(first(m.getLinks())));
 
                 if(m.getStatus() != null) {
                     if (Objects.equals(first(m.getStatus()), "31094503")) {
@@ -115,7 +115,22 @@ public class ec_europa_euProvider {
         }
         listingRepository.saveAll(listings);
     }
+
     private String first(List<String> list) {
         return (list != null && !list.isEmpty()) ? list.get(0) : null;
+    }
+
+    private String cleanString(String rawString) {
+        if (rawString == null || rawString.isEmpty()) {
+            return "";
+        }
+
+        rawString = rawString.replaceAll("(?is)<script.*?>.*?</script>", "");
+        rawString = rawString.replaceAll("(?is)<style.*?>.*?</style>", "");
+        rawString = rawString.replaceAll("<[^>]+>", "");
+        rawString = rawString.replaceAll("&nbsp;", " ");
+        rawString = rawString.replaceAll("&amp;", "&");
+        rawString = rawString.replaceAll("\\s+", " ").trim();
+        return rawString;
     }
 }

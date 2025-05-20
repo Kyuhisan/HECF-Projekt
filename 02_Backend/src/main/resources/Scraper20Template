@@ -1,7 +1,29 @@
+package si.um.feri.__Backend.service.provider;
+
+import jakarta.annotation.PreDestroy;
+import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+import java.io.File;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class scraper20Provider {
     private final WebDriver driver;
-    public scraper20Provider() {
+    public scraper20Provider() throws IOException {
         Resource resource = new ClassPathResource("chromeDriver/chromedriver-win64/chromedriver.exe");
         File driverFile = resource.getFile();
         System.setProperty("webdriver.chrome.driver", driverFile.getAbsolutePath());

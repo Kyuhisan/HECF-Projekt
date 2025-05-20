@@ -34,3 +34,7 @@ build/
 
 # Spring Boot config
 /src/main/resources/application.properties
+
+# scraper
+src/main/java/si/um/feri/__Backend/service/provider/scraper10Provider.java
+src/main/java/si/um/feri/__Backend/service/provider/scraper20Provider.java

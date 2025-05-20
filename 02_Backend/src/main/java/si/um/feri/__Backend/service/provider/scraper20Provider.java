@@ -1,4 +1,131 @@
 package si.um.feri.__Backend.service.provider;
 
+import jakarta.annotation.PreDestroy;
+import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
 public class scraper20Provider {
+    private final WebDriver driver;
+    public scraper20Provider() {
+        System.setProperty("webdriver.chrome.driver", "-- path to your ChromeDriver executable--");
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless=new");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+
+        driver = new ChromeDriver(options);
+    }
+
+
+    public List<Map<String, Object>> scrapeData() throws InterruptedException {
+        List<Map<String, Object>> results = new ArrayList<>();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+
+        int currentPage = 1;
+
+
+        while (true) {
+            String url = "-- sensitive info --" + currentPage;
+            driver.get(url);
+
+            System.out.println("Obdelujem stran: " + currentPage);
+
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("-- sensitive info --")));
+                List<WebElement> cards = driver.findElements(By.cssSelector("-- sensitive info --"));
+
+                if (cards.isEmpty()) {
+                    System.out.println("✔️ Ni več kartic na strani " + currentPage + ". Konec.");
+                    break;
+                }
+
+                int counter = 1;
+
+                for (WebElement card : cards) {
+                    Map<String, Object> data = new HashMap<>();
+                    String formattedId = String.format("-- sensitive info --", counter++, currentPage);
+                    data.put("id", formattedId);
+
+                    try {
+                        WebElement titleLink = card.findElement(By.cssSelector("-- sensitive info --"));
+                        data.put("title", titleLink.getText().trim());
+                        String relativeLink = titleLink.getAttribute("href");
+                        if (!relativeLink.startsWith("http")) {
+                            relativeLink = "-- sensitive info --" + relativeLink;
+                        }
+                        data.put("url", relativeLink);
+
+
+                        List<WebElement> paragraphs = card.findElements(By.xpath("-- sensitive info --"));
+                        if (!paragraphs.isEmpty()) {
+                            data.put("summary", paragraphs.get(0).getText().trim());
+                        }
+
+
+                        List<String> tags = new ArrayList<>();
+                        List<WebElement> tagElements = card.findElements(By.cssSelector("-- sensitive info --"));
+                        for (WebElement tag : tagElements) {
+                            tags.add(tag.getText().trim());
+                        }
+                        data.put("technology", tags);
+
+
+                        for (WebElement p : paragraphs) {
+                            if (p.getText().toLowerCase().contains("-- sensitive info --")) {
+                                String fullText = p.getText().trim();
+                                String[] parts = fullText.split("·");
+                                if (parts.length >= 2) {
+                                    data.put("status", parts[0].trim());
+                                    String deadlineRaw = parts[1].replace("-- sensitive info --", "").trim();
+                                    deadlineRaw = deadlineRaw.replaceAll("-- sensitive info --", "").trim();
+                                    data.put("deadlineDate", deadlineRaw);
+                                }
+                                break;
+                            }
+                        }
+
+                        results.add(data);
+
+                    } catch (Exception e) {
+                        System.out.println("Napaka pri obdelavi kartice: " + e.getMessage());
+                    }
+                }
+
+            } catch (TimeoutException e) {
+                System.out.println("Stran " + currentPage + " ni vsebovana kartice.");
+                System.out.println("Zakljućujem z scrapanjem");
+                break;
+            }
+
+            currentPage++;
+        }
+
+        return results;
+
+    }
+
+
+
+    @PreDestroy
+    public void shutdown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+
 }

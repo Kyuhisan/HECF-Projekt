@@ -21,7 +21,7 @@ public class scraper10Controller {
   }
 
   @GetMapping("/scrape/all")
-  public List<Map<String, Object>> getInfo() throws InterruptedException {
+  public List<Map<String, Object>> getInfo10() throws InterruptedException {
       return scraper10Provider.scrapeData();
   }
 }

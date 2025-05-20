@@ -5,8 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/listings/onepass_eu")
+@RequestMapping("/api/listings/scraper20")
 @CrossOrigin(origins = "http://localhost:5173")
-public class onepass_euController {
-
+public class scraper20Controller {
 }

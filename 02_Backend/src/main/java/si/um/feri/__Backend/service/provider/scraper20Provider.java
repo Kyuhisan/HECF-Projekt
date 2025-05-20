@@ -1,5 +1,4 @@
 package si.um.feri.__Backend.service.provider;
 
-public class onepassProvider {
-
+public class scraper20Provider {
 }

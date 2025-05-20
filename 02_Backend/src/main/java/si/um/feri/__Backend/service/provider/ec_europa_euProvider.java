@@ -71,35 +71,18 @@ public class ec_europa_euProvider {
         for (JsonNode itemNode : itemsNode) {
             ec_europa_euRaw raw = mapper.treeToValue(itemNode, ec_europa_euRaw.class);
             Listing listing = new Listing();
-            listing.setReference(raw.getReference());
-            //  listing.setSummary(raw.getSummary());
 
             ec_europa_euRaw.Metadata m = raw.getMetadata();
             if (m != null) {
                 listing.setSource("ec.europa.eu");
                 listing.setTitle(first(m.getTitle()));
-                listing.setCallIdentifier(first(m.getCallIdentifier()));
-                listing.setCallTitle(first(m.getCallTitle()));
-                listing.setStartDate(first(m.getStartDate()));
                 listing.setDeadlineDate(first(m.getDeadlineDate()));
-
                 String identifier = first(m.getIdentifier());
-                listing.setIdentifier(identifier);
+                listing.setId(identifier);
 
                 if (identifier != null && !identifier.isBlank()) {
                     listing.setUrl("https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/" + identifier);
                 }
-
-                listing.setDeadlineModel(first(m.getDeadlineModel()));
-                listing.setProgrammePeriod(first(m.getProgrammePeriod()));
-                listing.setBudgetOverview(cleanString(first(m.getBudgetOverview())));
-                listing.setSupportInfo(cleanString(first(m.getSupportInfo())));
-                listing.setSepTemplate(cleanString(first(m.getSepTemplate())));
-                listing.setDescriptionByte(cleanString(first(m.getDescriptionByte())));
-                listing.setLatestInfo(cleanString(first(m.getLatestInfos())));
-                listing.setAction(cleanString(first(m.getActions())));
-                listing.setKeywords(m.getKeywords());
-                listing.setLinks(cleanString(first(m.getLinks())));
 
                 if(m.getStatus() != null) {
                     if (Objects.equals(first(m.getStatus()), "31094503")) {

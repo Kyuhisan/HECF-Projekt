@@ -1,0 +1,120 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background: #f5f7fa;
+    color: #333;
+  }
+
+  .content-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    padding: 40px;
+    margin: 0;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 250px;
+    background: #f0f2f5;
+    padding: 2rem 1rem;
+    border-right: 1px solid #e0e0e0;
+    flex-shrink: 0;
+  }
+  
+  .filter-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .dropdown-header {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0.5rem;
+    background: #dce1e6;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+  }
+  
+  .dropdown-header:hover {
+    background: #c4c8cc;
+  }
+  
+  .dropdown-content {
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+  }
+  
+  .dropdown-content label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .dropdown-content input[type="checkbox"] {
+    margin-right: 0.5rem;
+  }
+  
+  /* Main Content */
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    padding: 2rem 3rem;
+    max-width: 1000px;
+    text-align: center;
+  }
+  
+  /* Shift main content more to the center */
+  .right-shift {
+    margin-left: 70px;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    margin-bottom: 2rem;
+  }
+  
+  .search-bar {
+    margin-bottom: 1.5rem;
+  }
+  
+  .search-bar input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  .results {
+    border-top: 1px solid #ddd;
+    padding-top: 1rem;
+    text-align: left;
+  }
+  
+  .result-item {
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .result-item:hover {
+    background: #eef2f7;
+  }
+  

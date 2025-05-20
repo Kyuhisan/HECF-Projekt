@@ -34,3 +34,6 @@ build/
 
 # Spring Boot config
 /src/main/resources/application.properties
+
+#scraper
+\src\main\java\si\um\feri\__Backend\service\provider\TESTcLASS.java

@@ -11,7 +11,7 @@
   }
 
   .content-wrapper {
-    max-width: 600px;
+    max-width: 1500px;
     margin: 0 auto;
     text-align: left;
   }
@@ -79,7 +79,7 @@
   
   /* Shift main content more to the center */
   .right-shift {
-    margin-left: 70px;
+    margin-left: 150px;
   }
   
   .title {

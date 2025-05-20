@@ -2,8 +2,9 @@
 public class scraper20Provider {
     private final WebDriver driver;
     public scraper20Provider() {
-        // uncomment his line below after adding crome driver
-      //  System.setProperty("webdriver.chrome.driver", "-- path to your ChromeDriver executable--");
+        Resource resource = new ClassPathResource("chromeDriver/chromedriver-win64/chromedriver.exe");
+        File driverFile = resource.getFile();
+        System.setProperty("webdriver.chrome.driver", driverFile.getAbsolutePath());
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless=new");

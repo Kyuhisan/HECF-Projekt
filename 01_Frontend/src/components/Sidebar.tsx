@@ -15,6 +15,9 @@ const Sidebar = () => {
     }
     return (
      <aside className="sidebar">
+      <div className="sidebar-header">
+        <h2>🔍 Filters</h2>
+      </div>
       {Object.entries(filters).map(([key, values]) => (
         <DropdownFilter
           key={key}

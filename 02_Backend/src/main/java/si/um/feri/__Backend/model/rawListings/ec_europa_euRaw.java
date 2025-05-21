@@ -9,9 +9,9 @@ import java.util.List;
 public class ec_europa_euRaw {
     private String source;
     private String summary;
+    private String reference;
     private Metadata metadata;
 
-    //  private String reference;
     //  private String apiVersion;
     //  private String url;
     //  private String title;
@@ -24,7 +24,7 @@ public class ec_europa_euRaw {
     //  private String content;
     //  private String accessRestriction;
     //  private String pages;
-    //  private String checksum;
+    private String checksum;
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)

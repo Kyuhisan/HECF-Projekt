@@ -10,7 +10,7 @@ type Listing = {
   title: string;
   summary: string | null;
   deadlineDate: string;
-  price: string;
+  budget: string;
 };
 
 type Props = {
@@ -18,7 +18,7 @@ type Props = {
     category: string[];
     status: string[];
     source: string[];
-    price: string[];
+    budget: string[];
     deadLine: string;
   };
 };
@@ -29,19 +29,19 @@ const MainContent = ({ filters }: Props) => {
 
   useEffect(() => {
     api.get('/listings/show/all')
-      .then((response) => setListings(response.data))
+      .then((response) => setListings(response.data))  
       .catch((error) => console.error('Error fetching listings:', error));
   }, []);
 
   useEffect(() => {
     const  results = listings.filter((listing) => {
       //const matchesCategory = filters.category.length === 0 || filters.category.includes(listing.category);
-      const matchesStatus = filters.status.length === 0 || filters.status.includes(listing.status);
+      const matchesStatus = !filters.budget || filters.status.length === 0 || filters.status.includes(listing.status);
       const matchesSource = filters.source.length === 0 || filters.source.includes(listing.source);
-      //const matchesPrice = filters.price.length === 0 || filters.price.includes(listing.price);
+      const matchesPrice = filters.budget.length === 0 || filters.budget.includes(listing.budget ?? 'Not specified');
       const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
 
-      return matchesStatus && matchesSource && matchesDeadline;
+      return matchesStatus && matchesPrice && matchesSource && matchesDeadline;
     });
     setFilteredListings(results);
   }, [listings, filters]);
@@ -61,7 +61,8 @@ const MainContent = ({ filters }: Props) => {
               <h4>{listing.title}</h4>
               <p><strong>Status:</strong> {listing.status}</p>
               <p><strong>Deadline:</strong> {listing.deadlineDate}</p>
-              <p><strong>Summary:</strong> {listing.summary}</p>
+              <p><strong>Summary:</strong> <span className="summary-clamp">{listing.summary ?? 'No summary avaliable.'}</span></p>
+              <p><strong>Budget:</strong> {listing.budget ?? 'Not specified'}</p>
               <p><strong>Source:</strong> {listing.source}</p>
               <a href={listing.url} target="_blank" rel="noopener noreferrer">View Listing</a>
             </div>

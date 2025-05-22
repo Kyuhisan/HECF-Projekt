@@ -157,3 +157,17 @@ body {
     0 4px 8px rgba(0, 0, 0, 0.06),
     0 12px 24px rgba(0, 0, 0, 0.08);
 }
+
+/*Limit summary na 5 vrstic*/
+.summary-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* Obvezne dodatne nastavitve */
+  line-height: 1.5em;
+  max-height: calc(1.5em * 5); /* 5 vrstic */
+  display: -webkit-box;
+}

@@ -8,7 +8,7 @@ function App() {
     category: [] as string[],
     status: [] as string[],
     source: [] as string[],
-    price: [] as string[],
+    budget: [] as string[],
     deadLine: "",
   });
 

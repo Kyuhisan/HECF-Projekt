@@ -1,13 +1,12 @@
 import './style.css';
 import { useState } from 'react';
-import DropdownFilter from './DropdownFilter';
 
 type Props = {
   filters: {
     category: string[];
     status: string[];
     source: string[];
-    price: string[];
+    budget: string[];
     deadLine: string;
   };
   onFilterChange: (filters: Props['filters']) => void;
@@ -16,8 +15,8 @@ type Props = {
 const filterOption = {
     category: ['Technology', 'Science', 'Art', 'History'],
     status: ['Forthcoming', 'Open', 'Closed'],
-    source: ['ec.europa.eu', 'se nekaj', 'se nekaj drugega'],
-    price: ['Free', '$1 - $50', '$50 - $100', '$100+']
+    source: ['ec.europa.eu', 'getonepass.eu', 'cascadefunding.eu'],
+    budget: ['Free', '$1 - $50', '$50 - $100', '$100+']
 };
 
 const Sidebar = ({ filters, onFilterChange }: Props) => {

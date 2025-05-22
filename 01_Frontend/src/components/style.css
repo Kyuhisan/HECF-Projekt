@@ -12,8 +12,8 @@ body {
 
 /* Layout Wrapper */
 .content-wrapper {
-  width: 100%;
-  max-width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
   text-align: left;
 }
 
@@ -80,7 +80,7 @@ body {
   align-items: center;
   flex: 1;
   padding: 2rem 3rem;
-  max-width: 1200px;
+  max-width: 1000px;
   width: 100%;
   text-align: center;
   padding-top: 100px;

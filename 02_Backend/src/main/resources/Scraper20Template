@@ -1,10 +1,7 @@
 package si.um.feri.__Backend.service.provider;
 
 import jakarta.annotation.PreDestroy;
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -12,18 +9,21 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import si.um.feri.__Backend.model.Listing;
+import si.um.feri.__Backend.repository.ListingRepository;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class scraper20Provider {
+    private final ListingRepository listingRepository;
     private final WebDriver driver;
-    public scraper20Provider() throws IOException {
+
+    public scraper20Provider(ListingRepository listingRepository) throws IOException {
+        this.listingRepository = listingRepository;
+
         Resource resource = new ClassPathResource("chromeDriver/chromedriver-win64/chromedriver.exe");
         File driverFile = resource.getFile();
         System.setProperty("webdriver.chrome.driver", driverFile.getAbsolutePath());
@@ -32,99 +32,163 @@ public class scraper20Provider {
         options.addArguments("--headless=new");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--window-size=1920,1080");
 
         driver = new ChromeDriver(options);
     }
 
-
-    public List<Map<String, Object>> scrapeData() throws InterruptedException {
+    public List<Map<String, Object>> scrapeData() {
         List<Map<String, Object>> results = new ArrayList<>();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
         int currentPage = 1;
 
-
         while (true) {
-            String url = "-- sensitive info --" + currentPage;
-            driver.get(url);
-
-            System.out.println("Obdelujem stran: " + currentPage);
+            String pageUrl = "source-url" + currentPage;
+            driver.get(pageUrl);
+            System.out.println("Processing page: " + currentPage);
 
             try {
-                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("-- sensitive info --")));
-                List<WebElement> cards = driver.findElements(By.cssSelector("-- sensitive info --"));
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.discoveryCard")));
+                List<WebElement> cards = driver.findElements(By.cssSelector("div.discoveryCard"));
 
                 if (cards.isEmpty()) {
-                    System.out.println("✔️ Ni več kartic na strani " + currentPage + ". Konec.");
+                    System.out.println("No more cards on page " + currentPage);
                     break;
                 }
-
                 int counter = 1;
 
                 for (WebElement card : cards) {
                     Map<String, Object> data = new HashMap<>();
-                    String formattedId = String.format("-- sensitive info --", counter++, currentPage);
+                    String formattedId = String.format("source-name-%03d-P%02d", counter++, currentPage);
                     data.put("id", formattedId);
 
                     try {
-                        WebElement titleLink = card.findElement(By.cssSelector("-- sensitive info --"));
+                        WebElement titleLink = card.findElement(By.cssSelector("h3.ui.wide.header a"));
                         data.put("title", titleLink.getText().trim());
                         String relativeLink = titleLink.getAttribute("href");
+
                         if (!relativeLink.startsWith("http")) {
-                            relativeLink = "-- sensitive info --" + relativeLink;
+                            relativeLink = "source-url" + relativeLink;
                         }
                         data.put("url", relativeLink);
 
-
-                        List<WebElement> paragraphs = card.findElements(By.xpath("-- sensitive info --"));
+                        List<WebElement> paragraphs = card.findElements(By.xpath(".//p"));
                         if (!paragraphs.isEmpty()) {
                             data.put("summary", paragraphs.get(0).getText().trim());
                         }
 
-
                         List<String> tags = new ArrayList<>();
-                        List<WebElement> tagElements = card.findElements(By.cssSelector("-- sensitive info --"));
+                        List<WebElement> tagElements = card.findElements(By.cssSelector("div.tags a.industrieTag"));
+
                         for (WebElement tag : tagElements) {
                             tags.add(tag.getText().trim());
                         }
                         data.put("technology", tags);
 
-
+                        //  SCRAPE STATUS
                         for (WebElement p : paragraphs) {
-                            if (p.getText().toLowerCase().contains("-- sensitive info --")) {
-                                String fullText = p.getText().trim();
-                                String[] parts = fullText.split("·");
-                                if (parts.length >= 2) {
+                            if (p.getText().toLowerCase().contains("apply before")) {
+                                String[] parts = p.getText().split("·");
+                                if (parts.length >= 1) {
                                     data.put("status", parts[0].trim());
-                                    String deadlineRaw = parts[1].replace("-- sensitive info --", "").trim();
-                                    deadlineRaw = deadlineRaw.replaceAll("-- sensitive info --", "").trim();
-                                    data.put("deadlineDate", deadlineRaw);
                                 }
                                 break;
                             }
                         }
-
                         results.add(data);
-
                     } catch (Exception e) {
-                        System.out.println("Napaka pri obdelavi kartice: " + e.getMessage());
+                        System.out.println("Error processing card: " + e.getMessage());
                     }
                 }
-
             } catch (TimeoutException e) {
-                System.out.println("Stran " + currentPage + " ni vsebovana kartice.");
-                System.out.println("Zakljućujem z scrapanjem");
+                System.out.println("Timeout or no cards found on page " + currentPage);
                 break;
             }
-
             currentPage++;
         }
 
-        return results;
+        //  SCRAPE DEADLINE DATE
+        for (Map<String, Object> item : results) {
+            try {
+                driver.get((String) item.get("url"));
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.ui.big.horizontal.divided.menu")));
 
+                List<WebElement> menuItems = driver.findElements(By.cssSelector("div.ui.big.horizontal.divided.menu > .item"));
+                for (WebElement menuItem : menuItems) {
+                    WebElement headerEl = menuItem.findElement(By.cssSelector(".header"));
+                    String header = headerEl.getText().trim();
+                    String text = menuItem.getText().replace(header, "").trim();
+
+                    if (header.equalsIgnoreCase("Apply before")) {
+                        item.put("deadlineDate", text);
+                        System.out.println("[Date] " + item.get("id") + ": " + text);
+                        break;
+                    }
+                }
+                item.putIfAbsent("deadlineDate", "Unknown");
+            } catch (Exception e) {
+                System.out.println("Error fetching deadline for " + item.get("id") + ": " + e.getMessage());
+                item.put("deadlineDate", "Unknown");
+            }
+        }
+        saveToMongo(results);
+        return results;
     }
 
+    private void saveToMongo(List<Map<String, Object>> results) {
+        List<Listing> listings = new ArrayList<>();
 
+        for (Map<String, Object> data : results) {
+            Listing listing = new Listing();
+
+            //  SOURCE UNIQUE IDENTIFIERS
+            String identifier = (String) data.get("id");
+            if (identifier == null) continue;
+            listing.setSourceIdentifier(identifier);
+
+            // STATUS
+            String rawStatus = (String) data.get("status");
+            String normalizedStatus;
+
+            if ("Open for applications".equals(rawStatus) || "Always open".equals(rawStatus)) {
+                normalizedStatus = "Open";
+            } else if ("Coming soon".equals(rawStatus)) {
+                normalizedStatus = "Forthcoming";
+            } else {
+                normalizedStatus = rawStatus != null ? rawStatus : "Unknown";
+            }
+            listing.setStatus(normalizedStatus);
+
+            // CHECK DUPLICATES
+            String sourceIdentifier = "source-name" + identifier + ":" + normalizedStatus;
+            if (listingRepository.existsBySourceIdentifier(sourceIdentifier)) {
+                System.out.println("Duplicate listing found: " + sourceIdentifier);
+                continue;
+            }
+            listing.setSourceIdentifier(sourceIdentifier);
+
+            // SOURCE
+            listing.setSource("source-name);
+
+            // TITLE
+            listing.setTitle((String) data.get("title"));
+
+            // START DATE
+            listing.setDeadlineDate((String) data.get("deadlineDate"));
+
+            // URL
+            listing.setUrl((String) data.get("url"));
+
+            //  SUMMARY
+            listing.setSummary((String) data.get("summary"));
+
+            // BUDGET
+
+            listings.add(listing);
+        }
+        listingRepository.saveAll(listings);
+    }
 
     @PreDestroy
     public void shutdown() {
@@ -132,5 +196,4 @@ public class scraper20Provider {
             driver.quit();
         }
     }
-
 }

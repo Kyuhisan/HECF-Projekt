@@ -11,20 +11,21 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import si.um.feri.__Backend.model.Listing;
+import si.um.feri.__Backend.repository.ListingRepository;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class scraper10Provider {
-
+    private final ListingRepository listingRepository;
     private final WebDriver driver;
 
-    public scraper10Provider() throws IOException {
+    public scraper10Provider(ListingRepository listingRepository) throws IOException {
+        this.listingRepository = listingRepository;
+
         Resource resource = new ClassPathResource("chromeDriver/chromedriver-win64/chromedriver.exe");
         File driverFile = resource.getFile();
         System.setProperty("webdriver.chrome.driver", driverFile.getAbsolutePath());
@@ -36,81 +37,152 @@ public class scraper10Provider {
 
         driver = new ChromeDriver(options);
     }
+
     public List<Map<String, Object>> scrapeData() throws InterruptedException {
         List<Map<String, Object>> results = new ArrayList<>();
 
-        driver.get("-- sensitive info --");
+        driver.get("source-url");
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("-- sensitive info --")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("call-card")));
 
-        List<WebElement> cards = driver.findElements(By.className("-- sensitive info --"));
+        List<WebElement> cards = driver.findElements(By.className("call-card"));
         int counter = 1;
 
         for (WebElement card : cards) {
             Map<String, Object> data = new HashMap<>();
 
-            String formattedId = String.format("-- sensitive info --", counter);
+            String formattedId = String.format("CHF-%03d", counter);
             data.put("id", formattedId);
             counter++;
 
-
+            // Try to get link
             List<WebElement> links = card.findElements(By.tagName("a"));
             if (!links.isEmpty()) {
                 data.put("url", links.get(0).getAttribute("href"));
             }
 
+            // Try to get title
+            List<WebElement> titleElements = card.findElements(By.cssSelector("h3.id"));
+            if (!titleElements.isEmpty()) {
+                data.put("title", titleElements.get(0).getText());
+            }
 
-            List<WebElement> summaryH4 = card.findElements(By.xpath("-- sensitive info --"));
+            // Try to get summary text
+            List<WebElement> summaryH4 = card.findElements(By.xpath(".//h4[text()='Summary']"));
             if (!summaryH4.isEmpty()) {
-                WebElement summaryP = summaryH4.get(0).findElement(By.xpath("-- sensitive info --"));
+                WebElement summaryP = summaryH4.get(0).findElement(By.xpath("following-sibling::p"));
                 data.put("summary", summaryP.getText());
             }
 
-
-            List<WebElement> closesH4 = card.findElements(By.xpath("-- sensitive info --"));
+            // Try to get closes date
+            List<WebElement> closesH4 = card.findElements(By.xpath(".//h4[text()='Closes']"));
             if (!closesH4.isEmpty()) {
-                WebElement closesP = closesH4.get(0).findElement(By.xpath("-- sensitive info --"));
+                WebElement closesP = closesH4.get(0).findElement(By.xpath("following-sibling::p"));
                 data.put("deadlineDate", closesP.getText());
             }
 
-
+            // Technology
             List<String> technologies = new ArrayList<>();
-            List<WebElement> techTags = card.findElements(By.xpath("-- sensitive info --"));
+            List<WebElement> techTags = card.findElements(By.xpath(".//h4[text()='Technology']/following-sibling::ul/li/a"));
             for (WebElement tag : techTags) {
                 technologies.add(tag.getText());
             }
             data.put("technology", technologies);
 
-
+            // Domains
             List<String> domains = new ArrayList<>();
-            List<WebElement> domainTags = card.findElements(By.xpath("-- sensitive info --"));
+            List<WebElement> domainTags = card.findElements(By.xpath(".//h4[text()='Domains']/following-sibling::ul/li/a"));
             for (WebElement tag : domainTags) {
                 domains.add(tag.getText());
             }
             data.put("domains", domains);
 
-
+            // Beneficiaries
             List<String> beneficiaries = new ArrayList<>();
-            List<WebElement> benTags = card.findElements(By.xpath("-- sensitive info --"));
+            List<WebElement> benTags = card.findElements(By.xpath(".//h4[text()='Type of beneficiary']/following-sibling::ul/li/a"));
             for (WebElement tag : benTags) {
                 beneficiaries.add(tag.getText());
             }
             data.put("typeOfBeneficiary", beneficiaries);
 
-
-            List<WebElement> fundingH4 = card.findElements(By.xpath("-- sensitive info --"));
+            // Max funding
+            List<WebElement> fundingH4 = card.findElements(By.xpath(".//h4[text()='Max funding per project']"));
             if (!fundingH4.isEmpty()) {
-                WebElement fundingP = fundingH4.get(0).findElement(By.xpath("-- sensitive info --"));
-                data.put("maxFunding", fundingP.getText());
-            }
-            //
+                WebElement fundingP = fundingH4.get(0).findElement(By.xpath("following-sibling::p"));
+
+                String fundingText = fundingP.getText();
+                if (!fundingText.isEmpty()) {
+                    fundingText = fundingText.substring(0, fundingText.length() - 1);
+                    fundingText = fundingText.replace(".", "");
+                }
+                data.put("maxFunding", fundingText);            }
 
             results.add(data);
             System.out.println("Scraper dodaja zapise za karto " + counter);
         }
-
+        saveToMongo(results);
         return results;
+    }
+
+    private void saveToMongo(List<Map<String, Object>> results) {
+        List<Listing> listings = new ArrayList<>();
+
+        for (Map<String, Object> data : results) {
+            Listing listing = new Listing();
+
+            //  SOURCE UNIQUE IDENTIFIERS
+            String identifier = (data.get("id").toString());
+            if (identifier == null) continue;
+            listing.setSourceIdentifier(identifier);
+
+            //  STATUS
+            listing.setStatus("Open");
+
+            //  CHECK DUPLICATES
+            String sourceIdentifier = "source-name" + identifier + ":" + listing.getStatus();
+            if (listingRepository.existsBySourceIdentifier(sourceIdentifier)) {
+                System.out.println("Duplicate listing found: " + sourceIdentifier);
+                continue;
+            }
+            listing.setSourceIdentifier(sourceIdentifier);
+
+            //  SOURCE
+            listing.setSource("source-name");
+
+            //  TITLE
+            listing.setTitle((String) data.get("title"));
+
+            //  END DATE
+            listing.setDeadlineDate((String) data.get("deadlineDate"));
+
+            //  URL
+            listing.setUrl((String) data.get("url"));
+
+            //  SUMMARY
+            listing.setSummary((String) data.get("summary"));
+
+            //  BUDGET
+            listing.setBudget((String) data.get("maxFunding"));
+
+//            Object techObj = data.get("technology");
+//            if (techObj instanceof List<?>) {
+//                listing.setTechnology((List<String>) techObj);
+//            }
+//
+//            Object domObj = data.get("domains");
+//            if (domObj instanceof List<?>) {
+//                listing.setDomains((List<String>) domObj);
+//            }
+//
+//            Object benObj = data.get("typeOfBeneficiary");
+//            if (benObj instanceof List<?>) {
+//                listing.setTypeOfBeneficiary((List<String>) benObj);
+//            }
+
+            listings.add(listing);
+        }
+        listingRepository.saveAll(listings);
     }
 
     @PreDestroy

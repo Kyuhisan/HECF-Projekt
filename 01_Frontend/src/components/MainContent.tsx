@@ -10,16 +10,41 @@ type Listing = {
   title: string;
   summary: string | null;
   deadlineDate: string;
+  price: string;
 };
 
-const MainContent = () => {
+type Props = {
+  filters: {
+    category: string[];
+    status: string[];
+    source: string[];
+    price: string[];
+    deadLine: string;
+  };
+};
+
+const MainContent = ({ filters }: Props) => {
   const [listings, setListings] = useState<Listing[]>([]);
+  const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
 
   useEffect(() => {
-    api.get<Listing[]>('/listings/show/all')
-      .then(res => setListings(res.data))
-      .catch(err => console.error("Error fetching listings", err));
+    api.get('/listings/show/all')
+      .then((response) => setListings(response.data))
+      .catch((error) => console.error('Error fetching listings:', error));
   }, []);
+
+  useEffect(() => {
+    const  results = listings.filter((listing) => {
+      //const matchesCategory = filters.category.length === 0 || filters.category.includes(listing.category);
+      const matchesStatus = filters.status.length === 0 || filters.status.includes(listing.status);
+      const matchesSource = filters.source.length === 0 || filters.source.includes(listing.source);
+      //const matchesPrice = filters.price.length === 0 || filters.price.includes(listing.price);
+      const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
+
+      return matchesStatus && matchesSource && matchesDeadline;
+    });
+    setFilteredListings(results);
+  }, [listings, filters]);
 
   return (
     <div className="main-content right-shift">
@@ -31,7 +56,7 @@ const MainContent = () => {
         </div>
 
         <div className="results">
-          {listings.map((listing) => (
+          {filteredListings.map((listing) => (
             <div className="result-item" key={listing.id}>
               <h4>{listing.title}</h4>
               <p><strong>Status:</strong> {listing.status}</p>

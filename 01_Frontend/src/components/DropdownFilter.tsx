@@ -5,11 +5,13 @@ type Props = {
     values: string[];
     isOpen: boolean;
     onToggle: () => void;
+    selectedValues: string[];
+    onCheckboxChange: (value: string) => void;
 }
 
-const DropdownFilter = ({ label, values, isOpen, onToggle }: Props) => {
+const DropdownFilter = ({ label, values, isOpen, onToggle, selectedValues, onCheckboxChange }: Props) => {
     return (
-            <div className="filter-group">
+    <div className="filter-group">
       <div className="dropdown-header" onClick={onToggle}>
         {label}
       </div>
@@ -17,7 +19,11 @@ const DropdownFilter = ({ label, values, isOpen, onToggle }: Props) => {
         <div className="dropdown-content">
           {values.map((value) => (
             <label key={value}>
-              <input type="checkbox" />
+              <input 
+                type="checkbox"
+                checked={selectedValues.includes(value)}
+                onChange={() => onCheckboxChange(value)} 
+              />
               {value}
             </label>
           ))}

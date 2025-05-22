@@ -12,7 +12,9 @@ public class scraper20Raw {
     private String url;
     private String title;
     private String summary;
+    // NEEDS STARTDATE
     private String deadlineDate;
+    // NEEDS FUNDING
 
     //  private String technology;
     //  private String reference;

@@ -15,6 +15,8 @@ import si.um.feri.__Backend.model.Listing;
 import si.um.feri.__Backend.model.rawListings.ec_europa_euRaw;
 import si.um.feri.__Backend.repository.ListingRepository;
 import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,23 +33,27 @@ public class ec_europa_euProvider {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
+        //  PATH TO FILTERS
         Resource queryFile = new ClassPathResource("filters/ec_europa_euFilters/" + queryFileName);
+        Resource sortFile = new ClassPathResource("filters/ec_europa_euFilters/sortQuery.json");
+
         ObjectMapper mapper = new ObjectMapper();
         int pageSize = 50;
         int page = 1;
 
         while (true) {
             String url = "https://api.tech.ec.europa.eu/search-api/prod/rest/search?apiKey=SEDIA&text=***&isExactMatch=true&pageSize=" + pageSize + "&pageNumber=" + page;
-
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 
-            //  File filters
+            //  FORM-DATA FILTERING
             HttpHeaders queryHeaders = new HttpHeaders();
             queryHeaders.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Resource> queryEntity = new HttpEntity<>(queryFile, queryHeaders);
+            HttpEntity<Resource> sortEntity = new HttpEntity<>(sortFile, queryHeaders);
             body.add("query", queryEntity);
+            body.add("sort", sortEntity);
 
-            //  Languages filter
+            //  FILTERING LANGUAGES
             HttpHeaders langHeaders = new HttpHeaders();
             langHeaders.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> langEntity = new HttpEntity<>("[\"en\"]", langHeaders);
@@ -59,6 +65,7 @@ public class ec_europa_euProvider {
             String jsonBody = response.getBody();
             saveToMongo(jsonBody);
 
+            //  CHECK IF THERE ARE MORE PAGES
             JsonNode root = mapper.readTree(jsonBody);
             JsonNode results = root.path("results");
 
@@ -67,7 +74,6 @@ public class ec_europa_euProvider {
             }
             page++;
         }
-
         System.out.println("Fetched listings from ec.europa.eu");
     }
 
@@ -79,83 +85,109 @@ public class ec_europa_euProvider {
         if (!itemsNode.isArray()) return;
 
         List<Listing> listingsToSave = new ArrayList<>();
-        int totalCount = 0;
-        int savedCount = 0;
-        int skippedNoId = 0;
-        int skippedDuplicate = 0;
-
-        int statusForthcoming = 0;
-        int statusOpen = 0;
-        int statusClosed = 0;
-        int statusUnknown = 0;
 
         for (JsonNode itemNode : itemsNode) {
-            totalCount++;
-
             ec_europa_euRaw raw = mapper.treeToValue(itemNode, ec_europa_euRaw.class);
             Listing listing = new Listing();
-
-            listing.setId(raw.getReference());
-
             ec_europa_euRaw.Metadata m = raw.getMetadata();
-            if (m == null) {
-                System.out.println("Skipping entry with null metadata.");
-                continue;
-            }
 
-            listing.setSource("ec.europa.eu");
-            listing.setTitle(first(m.getTitle()));
-            listing.setDeadlineDate(first(m.getDeadlineDate()));
+            //  SOURCE UNIQUE IDENTIFIERS
             String identifier = first(m.getIdentifier());
+            listing.setSourceIdentifier(identifier);
 
-            if (raw.getReference() == null || raw.getReference().isBlank()) {
-                System.out.println("Skipping listing with missing identifier.");
-                skippedNoId++;
+            //  STATUS
+            switch (first(m.getStatus())) {
+                case "31094501" -> listing.setStatus("Forthcoming");
+                case "31094502" -> listing.setStatus("Open");
+                case "31094503" -> listing.setStatus("Closed");
+                default -> {
+                    listing.setStatus("Unknown");
+                }
+            }
+
+            //  CHECK DUPLICATES
+            String sourceIdentifier = "ec.europa.eu:" + identifier + ":" + listing.getStatus();
+            if (listingRepository.existsBySourceIdentifier(sourceIdentifier)) {
+                System.out.println("Duplicate listing found: " + sourceIdentifier);
+                continue;
+            }
+            listing.setSourceIdentifier(sourceIdentifier);
+
+            //  CHECK DEADLINE MODEL
+            if (!Objects.equals(first(m.getDeadlineModel()), "single-stage")) {
+                System.out.println("Deadline model is not single-stage!");
                 continue;
             }
 
+            //  SOURCE
+            listing.setSource("ec.europa.eu");
+
+            //  TITLE
+            listing.setTitle(first(m.getTitle()));
+
+            //  START/END DATES
+            listing.setStartDate(convertDate(first(m.getStartDate())));
+            listing.setDeadlineDate(convertDate(first(m.getDeadlineDate())));
+
+            //  URL
             listing.setUrl("https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/" + identifier);
 
-            if (listingRepository.existsById(raw.getReference())) {
-                System.out.println("Skipping duplicate listing with ID: " + raw.getReference());
-                skippedDuplicate++;
-                continue;
-            }
+            //  SUMMARY
+            listing.setSummary(cleanString(first(m.getDescriptionByte())));
 
-            String rawStatus = first(m.getStatus());
-            if (rawStatus == null) {
-                listing.setStatus("Unknown");
-                statusUnknown++;
-            } else if (rawStatus.equals("31094501")) {
-                listing.setStatus("Forthcoming");
-                statusForthcoming++;
-            } else if (rawStatus.equals("31094502")) {
-                listing.setStatus("Open");
-                statusOpen++;
-            } else if (rawStatus.equals("31094503")) {
-                listing.setStatus("Closed");
-                statusClosed++;
-            } else {
-                listing.setStatus("Unknown");
-                statusUnknown++;
-                System.out.println("Unmapped status code: " + rawStatus + " for ID: " + identifier);
+            //  BUDGET
+            String budget = first(m.getBudget());
+
+            if (budget != null && !budget.isBlank()) {
+                listing.setBudget(budget);
+            } else if (m.getBudgetOverview() != null && !m.getBudgetOverview().isEmpty() && identifier != null) {
+                String overviewJson = m.getBudgetOverview().get(0);
+                JsonNode overviewNode = new ObjectMapper().readTree(overviewJson);
+                JsonNode topicMap = overviewNode.path("budgetTopicActionMap");
+
+                double matchedBudget = 0;
+                boolean foundMatch = false;
+
+                if (topicMap.isObject()) {
+                    for (JsonNode actionsArray : topicMap) {
+                        for (JsonNode action : actionsArray) {
+                            String actionName = action.path("action").asText();
+
+                            if (actionName != null && (actionName.startsWith(identifier) || actionName.contains(identifier))) {
+                                foundMatch = true;
+                                JsonNode yearMap = action.path("budgetYearMap");
+
+                                if (yearMap.isObject()) {
+                                    for (JsonNode amountNode : yearMap) {
+                                        matchedBudget += amountNode.asDouble();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (foundMatch && matchedBudget > 0) {
+                    listing.setBudget(String.format("%.0f", matchedBudget));
+                }
             }
             listingsToSave.add(listing);
-            savedCount++;
+
         }
         listingRepository.saveAll(listingsToSave);
-
-        System.out.println("Total listings parsed: " + totalCount);
-        System.out.println("Saved listings: " + savedCount);
-        System.out.println("Skipped (no ID): " + skippedNoId);
-        System.out.println("Skipped (duplicate): " + skippedDuplicate);
-        System.out.println("Status counts: Forthcoming=" + statusForthcoming + ", Open=" + statusOpen + ", Closed=" + statusClosed + ", Unknown=" + statusUnknown);
     }
 
+    //  GET FIRST ELEMENT OF LIST
     private String first(List<String> list) {
         return (list != null && !list.isEmpty()) ? list.get(0) : null;
     }
 
+    //  CONVERT DATE FROM API TO DD/MM/YYYY
+    public static String convertDate(String inputDate) {
+        OffsetDateTime odt = OffsetDateTime.parse(inputDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+        return odt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    //  CLEAN STRING OF HTML TAGS
     private String cleanString(String rawString) {
         if (rawString == null || rawString.isEmpty()) {
             return "";

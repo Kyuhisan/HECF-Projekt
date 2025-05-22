@@ -7,11 +7,10 @@ import java.util.List;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ec_europa_euRaw {
-    private String source;
-    private String summary;
-    private String reference;
     private Metadata metadata;
 
+    //  private String summary;
+    //  private String reference;
     //  private String apiVersion;
     //  private String url;
     //  private String title;
@@ -24,7 +23,7 @@ public class ec_europa_euRaw {
     //  private String content;
     //  private String accessRestriction;
     //  private String pages;
-    private String checksum;
+    //  private String checksum;
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,24 +32,25 @@ public class ec_europa_euRaw {
         private List<String> title;
         private List<String> deadlineDate;
         private List<String> status;
-        private List<String> url;
+        private List<String> budget;
+        private List<String> budgetOverview;
+        private List<String> startDate;
+        private List<String> deadlineModel;
+        private List<String> descriptionByte;
 
+//      private List<String> callIdentifier;
+//      private List<String> url;
 //      private List<String> latestInfos;
 //      private List<String> sepTemplate;
 //      private List<String> keywords;
 //      private List<String> topicConditions;
 //      private List<String> type;
 //      private List<String> typeOfMGAs;
-//      private List<String> callIdentifier;
 //      private List<String> links;
 //      private List<String> callTitle;
 //      private List<String> frameworkProgramme;
-//      private List<String> descriptionByte;
 //      private List<String> programmePeriod;
 //      private List<String> actions;
-//      private List<String> budgetOverview;
-//      private List<String> startDate;
-//      private List<String> deadlineModel;
 //      private List<String> supportInfo;
 //      private List<String> es_SortDate;
 //      private List<String> es_SortStatus;

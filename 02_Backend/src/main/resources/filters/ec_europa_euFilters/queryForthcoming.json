@@ -1,6 +1,7 @@
 {
   "bool": {
     "must": [
+      { "terms": { "type": ["1", "2", "8"] } },
       { "terms": { "status": ["31094501"] } },
       { "terms": { "frameworkProgramme": ["43108390"] } }
     ]

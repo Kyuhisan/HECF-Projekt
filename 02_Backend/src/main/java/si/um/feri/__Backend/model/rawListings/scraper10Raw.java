@@ -12,11 +12,12 @@ public class scraper10Raw {
     private String url;
     private String title;
     private String summary;
+    // NEEDS STARTDATE
     private String deadlineDate;
+    private String maxFunding;
 
 //    private String reference;
 //    private String technology;
 //    private String domains;
 //    private String typeOfBeneficiary;
-//    private String maxFunding;
 }

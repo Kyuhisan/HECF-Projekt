@@ -23,7 +23,7 @@ const MainContent = () => {
 
   return (
     <div className="main-content right-shift">
-      <div className="title">HECF</div>
+      <div className="title">HECF-SmartSearch</div>
 
       <div className="content-wrapper">
         <div className="search-bar">

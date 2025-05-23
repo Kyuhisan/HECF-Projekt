@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./style.css";
 import { api } from "../api";
+import SmartSearch from "./SmartSearch";
 
 type Listing = {
   id: string;
@@ -39,6 +40,7 @@ function formatEuro(budget: string | null): string {
 const MainContent = ({ filters }: Props) => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     api
@@ -69,12 +71,12 @@ const MainContent = ({ filters }: Props) => {
 
   return (
     <div className="main-content right-shift">
-      <div className="title">HECF-SmartSearch</div>
 
       <div className="content-wrapper">
-        <div className="search-bar">
-          <input type="text" placeholder="Search by summary..." />
-        </div>
+        
+    {/* Dodal SmartSearch komponentu za api */}
+        <SmartSearch value={searchTerm} onChange={setSearchTerm}></SmartSearch>
+      {/* Dodal SmartSearch komponentu  za api */}   
 
         <div className="results">
           {filteredListings.map((listing) => (

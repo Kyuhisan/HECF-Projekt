@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
-@Document(collection = "listings")
+@Document(collection = "listingsTest")
 @Data
 public class Listing {
     @Id
@@ -23,4 +23,9 @@ public class Listing {
     private String startDate;
     private String deadlineDate;
     private String budget;
+
+    //  NEWLY ADDED
+    private List<String> keywords;
+    private List<String> industries;
+    private List<String> technologies;
 }

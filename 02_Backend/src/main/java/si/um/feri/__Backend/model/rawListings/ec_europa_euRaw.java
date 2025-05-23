@@ -9,6 +9,7 @@ import java.util.List;
 public class ec_europa_euRaw {
     private Metadata metadata;
 
+    //  UNUSED
     //  private String summary;
     //  private String reference;
     //  private String apiVersion;
@@ -38,6 +39,7 @@ public class ec_europa_euRaw {
         private List<String> deadlineModel;
         private List<String> descriptionByte;
 
+        //  UNUSED
 //      private List<String> callIdentifier;
 //      private List<String> url;
 //      private List<String> latestInfos;

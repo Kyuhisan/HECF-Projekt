@@ -1,4 +1,5 @@
 package si.um.feri.__Backend.service.provider;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
@@ -14,7 +15,11 @@ import org.springframework.web.client.RestTemplate;
 import si.um.feri.__Backend.model.Listing;
 import si.um.feri.__Backend.model.rawListings.ec_europa_euRaw;
 import si.um.feri.__Backend.repository.ListingRepository;
+import org.springframework.http.*;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,39 +38,34 @@ public class ec_europa_euProvider {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        //  PATH TO FILTERS
         Resource queryFile = new ClassPathResource("filters/ec_europa_euFilters/" + queryFileName);
         Resource sortFile = new ClassPathResource("filters/ec_europa_euFilters/sortQuery.json");
 
         ObjectMapper mapper = new ObjectMapper();
         int pageSize = 50;
         int page = 1;
+        List<String> allPages = new ArrayList<>();
 
         while (true) {
             String url = "https://api.tech.ec.europa.eu/search-api/prod/rest/search?apiKey=SEDIA&text=***&isExactMatch=true&pageSize=" + pageSize + "&pageNumber=" + page;
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 
-            //  FORM-DATA FILTERING
             HttpHeaders queryHeaders = new HttpHeaders();
             queryHeaders.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Resource> queryEntity = new HttpEntity<>(queryFile, queryHeaders);
-            HttpEntity<Resource> sortEntity = new HttpEntity<>(sortFile, queryHeaders);
-            body.add("query", queryEntity);
-            body.add("sort", sortEntity);
+            body.add("query", new HttpEntity<>(queryFile, queryHeaders));
+            body.add("sort", new HttpEntity<>(sortFile, queryHeaders));
 
-            //  FILTERING LANGUAGES
             HttpHeaders langHeaders = new HttpHeaders();
             langHeaders.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> langEntity = new HttpEntity<>("[\"en\"]", langHeaders);
-            body.add("languages", langEntity);
+            body.add("languages", new HttpEntity<>("[\"en\"]", langHeaders));
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
 
             String jsonBody = response.getBody();
             saveToMongo(jsonBody);
+            allPages.add(jsonBody);
 
-            //  CHECK IF THERE ARE MORE PAGES
             JsonNode root = mapper.readTree(jsonBody);
             JsonNode results = root.path("results");
 
@@ -74,7 +74,32 @@ public class ec_europa_euProvider {
             }
             page++;
         }
+
+        //  SAVE RAW DATA
+        String suffix = queryFileName
+                .replace("query", "ec_europa_eu")
+                .replace(".json", "RawData.json");
+
+        String projectRoot = System.getProperty("user.dir");
+        String outputPath = projectRoot + "/output/rawData/ec_europa_eu/" + suffix;
+
+        saveRaw(allPages, outputPath);
         System.out.println("Fetched listings from ec.europa.eu");
+    }
+
+    public void saveRaw(List<String> jsonPages, String filePath) throws IOException {
+        Files.createDirectories(Paths.get(filePath).getParent());
+        try (FileWriter writer = new FileWriter(filePath)) {
+            writer.write("[\n");
+            for (int i = 0; i < jsonPages.size(); i++) {
+                writer.write(jsonPages.get(i));
+                if (i < jsonPages.size() - 1) {
+                    writer.write(",\n");
+                }
+            }
+            writer.write("\n]");
+        }
+        System.out.println("Saved raw data to: " + filePath);
     }
 
     private void saveToMongo(String json) throws IOException {

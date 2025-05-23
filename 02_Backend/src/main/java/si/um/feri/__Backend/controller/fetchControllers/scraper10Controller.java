@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import si.um.feri.__Backend.service.provider.scraper10Provider;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +20,7 @@ public class scraper10Controller {
   }
 
   @GetMapping("/scrape/all")
-  public List<Map<String, Object>> getInfo10() throws InterruptedException {
+  public List<Map<String, Object>> getInfo10() throws InterruptedException, IOException {
       return scraper10Provider.scrapeData();
   }
 }

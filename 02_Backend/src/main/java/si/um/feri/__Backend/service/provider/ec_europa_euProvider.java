@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -15,7 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import si.um.feri.__Backend.model.Listing;
 import si.um.feri.__Backend.model.rawListings.ec_europa_euRaw;
 import si.um.feri.__Backend.repository.ListingRepository;
-import org.springframework.http.*;
+import org.bson.Document;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,8 +31,11 @@ import java.util.Objects;
 @Service
 public class ec_europa_euProvider {
     private final ListingRepository listingRepository;
-    public ec_europa_euProvider(ListingRepository listingRepository) {
+    private final MongoTemplate mongoTemplate;
+
+    public ec_europa_euProvider(ListingRepository listingRepository, MongoTemplate mongoTemplate) {
         this.listingRepository = listingRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     public void fetchListings(String queryFileName) throws IOException {
@@ -62,8 +67,9 @@ public class ec_europa_euProvider {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
 
+            //  SAVE FILTERED DATA TO MONGO
             String jsonBody = response.getBody();
-            saveToMongo(jsonBody);
+            saveFilteredToMongo(jsonBody);
             allPages.add(jsonBody);
 
             JsonNode root = mapper.readTree(jsonBody);
@@ -75,19 +81,24 @@ public class ec_europa_euProvider {
             page++;
         }
 
-        //  SAVE RAW DATA
+        //  SET UP OUTPUT PATH
         String suffix = queryFileName
                 .replace("query", "ec_europa_eu")
                 .replace(".json", "RawData.json");
 
+        //  SAVE RAW DATA LOCALLY
         String projectRoot = System.getProperty("user.dir");
         String outputPath = projectRoot + "/output/rawData/ec_europa_eu/" + suffix;
+        saveRawLocally(allPages, outputPath);
 
-        saveRaw(allPages, outputPath);
+        //  SAVE RAW DATA TO MONGODB
+        String sourceStatus = "ec.europa.eu:" + queryFileName.replace("query", "").replace(".json", "");
+        saveRawToMongo(allPages, sourceStatus);
+
         System.out.println("Fetched listings from ec.europa.eu");
     }
 
-    public void saveRaw(List<String> jsonPages, String filePath) throws IOException {
+    public void saveRawLocally(List<String> jsonPages, String filePath) throws IOException {
         Files.createDirectories(Paths.get(filePath).getParent());
         try (FileWriter writer = new FileWriter(filePath)) {
             writer.write("[\n");
@@ -102,7 +113,28 @@ public class ec_europa_euProvider {
         System.out.println("Saved raw data to: " + filePath);
     }
 
-    private void saveToMongo(String json) throws IOException {
+    public void saveRawToMongo(List<String> jsonPages, String provider) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        mongoTemplate.getCollection("Listings-Raw(ec.europa.eu)").deleteMany(new Document("sourceProvider", provider));
+
+        for (String pageJson : jsonPages) {
+            JsonNode root = mapper.readTree(pageJson);
+            JsonNode results = root.path("results");
+
+            if (!results.isArray()) continue;
+
+            for (JsonNode resultNode : results) {
+                Document bsonDoc = Document.parse(resultNode.toString());
+                bsonDoc.put("sourceProvider", provider);
+
+                mongoTemplate.insert(bsonDoc, "Listings-Raw(ec.europa.eu)");
+            }
+        }
+        System.out.println("Replaced raw listings in MongoDB for provider: " + provider);
+    }
+
+    private void saveFilteredToMongo(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(json);
         JsonNode itemsNode = root.path("results");
@@ -159,6 +191,16 @@ public class ec_europa_euProvider {
 
             //  SUMMARY
             listing.setSummary(cleanString(first(m.getDescriptionByte())));
+            listing.setDescription(cleanString(first(m.getDescriptionByte())));
+
+            //  KEYWORDS
+            listing.setKeywords(m.getTags());
+
+            //  INDUSTRIES
+            listing.setIndustries(m.getCrossCuttingPriorities());
+
+            //  TECHNOLOGIES
+            listing.setTechnologies(m.getTypesOfAction());
 
             //  BUDGET
             String budget = first(m.getBudget());

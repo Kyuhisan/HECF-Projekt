@@ -37,9 +37,13 @@ public class ec_europa_euRaw {
         private List<String> budgetOverview;
         private List<String> startDate;
         private List<String> deadlineModel;
-        private List<String> descriptionByte;
+        private List<String> descriptionByte;           //  summary
+        private List<String> crossCuttingPriorities;    //  technologies
+        private List<String> tags;                      //  keywords
+        private List<String> typesOfAction;             //  industries
 
         //  UNUSED
+//      private List<String> destination;
 //      private List<String> callIdentifier;
 //      private List<String> url;
 //      private List<String> latestInfos;
@@ -66,12 +70,9 @@ public class ec_europa_euRaw {
 //      private List<String> REFERENCE;
 //      private List<String> es_ContentType;
 //      private List<String> programmeDivision;
-//      private List<String> crossCuttingPriorities;
 //      private List<String> esDA_IngestDate;
-//      private List<String> typesOfAction;
 //      private List<String> es_Combine;
 //      private List<String> esST_URL;
-//      private List<String> tags;
 //      private List<String> cenTagsA;
 //      private List<String> esDA_QueueDate;
 //      private List<String> allowPartnerSearch;

@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
-@Document(collection = "listingsKeyWordsTest")
+@Document(collection = "Listings-Filtered")
 @Data
 public class Listing {
     @Id
@@ -28,4 +28,5 @@ public class Listing {
     private List<String> keywords;
     private List<String> industries;
     private List<String> technologies;
+    private String description;
 }

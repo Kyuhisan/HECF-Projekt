@@ -80,8 +80,6 @@ const Sidebar = ({ filters, onFilterChange }: Props) => {
           onChange={handleDateChange}
         />
       </div>
-
-
     </aside>
     );
 };

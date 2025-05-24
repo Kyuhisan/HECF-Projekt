@@ -52,19 +52,12 @@ const MainContent = ({ filters }: Props) => {
   useEffect(() => {
     const results = listings.filter((listing) => {
       //const matchesCategory = filters.category.length === 0 || filters.category.includes(listing.category);
-      const matchesStatus =
-        !filters.budget ||
-        filters.status.length === 0 ||
-        filters.status.includes(listing.status);
-      const matchesSource =
-        filters.source.length === 0 || filters.source.includes(listing.source);
-      const matchesPrice =
-        filters.budget.length === 0 ||
-        filters.budget.includes(listing.budget ?? "Not specified");
-      const matchesDeadline =
-        !filters.deadLine || listing.deadlineDate === filters.deadLine;
+      const matchesStatus = !filters.status || filters.status.length === 0 || filters.status.includes(listing.status);
+      const matchesSource = filters.source.length === 0 || filters.source.includes(listing.source);
+      const matchesBudget = filters.budget.length === 0 || filters.budget.includes(listing.budget ?? 'Not specified');
+      const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
 
-      return matchesStatus && matchesPrice && matchesSource && matchesDeadline;
+      return matchesStatus && matchesBudget && matchesSource && matchesDeadline;
     });
     setFilteredListings(results);
   }, [listings, filters]);

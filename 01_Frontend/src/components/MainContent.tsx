@@ -19,7 +19,7 @@ type Props = {
     category: string[];
     status: string[];
     source: string[];
-    budget: string[];
+    budget: number;
     deadLine: string;
   };
 };
@@ -54,7 +54,8 @@ const MainContent = ({ filters }: Props) => {
       //const matchesCategory = filters.category.length === 0 || filters.category.includes(listing.category);
       const matchesStatus = !filters.status || filters.status.length === 0 || filters.status.includes(listing.status);
       const matchesSource = filters.source.length === 0 || filters.source.includes(listing.source);
-      const matchesBudget = filters.budget.length === 0 || filters.budget.includes(listing.budget ?? 'Not specified');
+      const listingBudget = Number(listing.budget);
+      const matchesBudget = isNaN(listingBudget) || listingBudget <= filters.budget;
       const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
 
       return matchesStatus && matchesBudget && matchesSource && matchesDeadline;
@@ -66,43 +67,30 @@ const MainContent = ({ filters }: Props) => {
     <div className="main-content right-shift">
       <div className="content-wrapper">
         
-          {/* Dodal SmartSearch komponentu za api */}
+          {/* Dodal SmartSearch komponento za api */}
           <SmartSearch
             value={searchTerm}
             onChange={setSearchTerm}
           ></SmartSearch>
-          {/* Dodal SmartSearch komponentu  za api */}
+          {/* Dodal SmartSearch komponento za api */}
         
         <div className="results">
           {filteredListings.map((listing) => (
             <div className="result-item" key={listing.id}>
               <h4>{listing.title}</h4>
-              <p>
-                <strong>Status:</strong> {listing.status}
-              </p>
-              <p>
-                <strong>Deadline:</strong> {listing.deadlineDate}
-              </p>
-              <p>
-                <strong>Summary:</strong>{" "}
+              <p><strong>Status:</strong> {listing.status}</p>
+              <p><strong>Deadline:</strong> {listing.deadlineDate}</p>
+              <p><strong>Summary:</strong>{" "}
                 <span className="summary-clamp">
                   {listing.summary ?? "No summary avaliable."}
                 </span>
               </p>
-              <p>
-                <p>
-                  <strong>Budget:</strong> {formatEuro(listing.budget)}
-                </p>
-              </p>
-              <p>
-                <strong>Source:</strong> {listing.source}
-              </p>
-              <a href={listing.url} target="_blank" rel="noopener noreferrer">
-                View Listing
-              </a>
+              <p><p><strong>Budget:</strong> {formatEuro(listing.budget)}</p></p>
+              <p><strong>Source:</strong> {listing.source}</p>
+              <a href={listing.url} target="_blank" rel="noopener noreferrer">View Listing</a>
             </div>
           ))}
-
+          
           {listings.length === 0 && <p>No forthcoming listings found.</p>}
         </div>
       </div>

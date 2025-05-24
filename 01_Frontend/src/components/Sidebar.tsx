@@ -6,17 +6,16 @@ type Props = {
     category: string[];
     status: string[];
     source: string[];
-    budget: string[];
+    budget: number;
     deadLine: string;
   };
   onFilterChange: (filters: Props['filters']) => void;
 }
 
 const filterOption = {
-    category: ['Technology', 'Science', 'Art', 'History'],
-    status: ['Forthcoming', 'Open', 'Closed'],
-    source: ['ec.europa.eu', 'getonepass.eu', 'cascadefunding.eu'],
-    budget: ['Free', '$1 - $50', '$50 - $100', '$100+']
+  category: ['Technology', 'Science', 'Art', 'History'],
+  status: ['Forthcoming', 'Open', 'Closed'],
+  source: ['ec.europa.eu', 'getonepass.eu', 'cascadefunding.eu'],
 };
 
 const Sidebar = ({ filters, onFilterChange }: Props) => {
@@ -34,7 +33,7 @@ const Sidebar = ({ filters, onFilterChange }: Props) => {
         ? groupValues.filter(v => v !== value)
         : [...groupValues, value];
 
-        onFilterChange({ ...filters, [group]: updateValues });
+      onFilterChange({ ...filters, [group]: updateValues });
     };
     
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +41,7 @@ const Sidebar = ({ filters, onFilterChange }: Props) => {
       const [year, month, day] = isoDate.split("-");
       const formatted = `${day}/${month}/${year}`;
       onFilterChange({ ...filters, deadLine: formatted });
-  };
+    };
 
     return (
      <aside className="sidebar">
@@ -70,6 +69,22 @@ const Sidebar = ({ filters, onFilterChange }: Props) => {
           )}
         </div>
       ))}
+      {/* Budget slider */}
+      <div className='filter-group'>
+        <label className="budget-label">Budget: </label>
+        <input
+          type="range"
+          min={0}
+          max={100000000}
+          step={1000000}
+          value={filters.budget || 0}
+          onChange={(e) => onFilterChange( {...filters, budget: Number(e.target.value)})}
+        />
+        <span className="budget-value">
+          {filters.budget.toLocaleString()}€
+        </span>
+      </div>
+
       {/* Datum obravnava za filter */}
       <div className='filter-group'>
         <label className="deadline-date">Deadline: </label>

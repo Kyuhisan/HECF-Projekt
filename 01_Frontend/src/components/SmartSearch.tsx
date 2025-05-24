@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import debounce from "lodash/debounce";
 import { extractKeywords } from "../OpenAI/extractKeywords";
+import './style.css';
 
 type SmartSearchProps = {
   value: string;
@@ -12,12 +13,16 @@ const SmartSearch = ({ value, onChange }: SmartSearchProps) => {
   const [loading, setLoading] = useState(false);
 
   const handleExtract = useCallback(
-    debounce(async (val: string) => {
-      setLoading(true);
-      const extracted = await extractKeywords(val);
-      setKeywords(extracted);
-      setLoading(false);
-    }, 800, { leading: false, trailing: true }),
+    debounce(
+      async (val: string) => {
+        setLoading(true);
+        const extracted = await extractKeywords(val);
+        setKeywords(extracted);
+        setLoading(false);
+      },
+      800,
+      { leading: false, trailing: true }
+    ),
     []
   );
 
@@ -25,27 +30,53 @@ const SmartSearch = ({ value, onChange }: SmartSearchProps) => {
     <>
       <div className="title">HECF-SmartSearch</div>
 
-      <div className="content-wrapper">
+      <div className="content-wrapper-search">
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Search by summary..."
+            placeholder="Describe what you're looking for..."
             value={value}
             onChange={(e) => onChange(e.target.value)}
           />
-          <button onClick={() => handleExtract(value)} disabled={loading || !value}>
-            {loading ? "Extracting..." : "Get Keywords"}
+          <button
+            onClick={() => handleExtract(value)}
+            disabled={loading || !value}
+            className="search-button"
+          >
+            {loading ? (
+              <div className="spinner"></div>
+            ) : (
+              <svg
+                className="arrow-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 10l7-7m0 0l7 7m-7-7v18"
+                />
+              </svg>
+            )}
           </button>
         </div>
 
         {keywords.length > 0 && (
           <div className="keyword-results">
-            <strong>Extracted Keywords:</strong>
-            <ul>
+            <strong>Recommended results : </strong>
+            
+            <div className="container-keywords">
               {keywords.map((k) => (
-                <li key={k}>{k}</li>
+                <div
+                  key={k}
+                  className="keyword-item"
+                >
+                  {k}
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
       </div>

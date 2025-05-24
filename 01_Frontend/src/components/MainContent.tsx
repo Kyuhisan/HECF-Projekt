@@ -71,13 +71,15 @@ const MainContent = ({ filters }: Props) => {
 
   return (
     <div className="main-content right-shift">
-
       <div className="content-wrapper">
         
-    {/* Dodal SmartSearch komponentu za api */}
-        <SmartSearch value={searchTerm} onChange={setSearchTerm}></SmartSearch>
-      {/* Dodal SmartSearch komponentu  za api */}   
-
+          {/* Dodal SmartSearch komponentu za api */}
+          <SmartSearch
+            value={searchTerm}
+            onChange={setSearchTerm}
+          ></SmartSearch>
+          {/* Dodal SmartSearch komponentu  za api */}
+        
         <div className="results">
           {filteredListings.map((listing) => (
             <div className="result-item" key={listing.id}>

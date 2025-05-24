@@ -26,13 +26,14 @@ From the following list of keywords, select exactly 5 that are most relevant to 
 Only return a JSON array of the selected keywords (as strings), no explanation.
 
 Keywords:
-Manufacturing, Mobility, Tourism, Energy, Healthcare, Natural Resources, Transportation, Food and Beverage,
-Aerospace, Agriculture, Construction, Automotive, Media and Entertainment, Sustainability, Textiles,
-Electronics, Renewable Energy, Education, Health care, Art, CleanTech, GreenTech, Artificial Intelligence,
-Next Generation Internet, Cyber Security, Augmented Reality, Internet of Things, Virtual Reality,
-Data Integration, Big Data, Robotics, Cloud Computing, 5G, Blockchain, Data Visualization,
-Industrial Automation, Edge devices, Machine Learning, Drones, Biotechnology
-
+Advanced Manufacturing, Advanced Manufacturing and Industry, Agriculture, Agriculture and Food, AI and Big Data, Aerospace,
+Art, Arts, Artificial Intelligence, AR/VR/XR, Automotive, Big Data, Biotechnology, Blockchain, CleanTech, Cloud Computing,
+Construction, Culture and Heritage, Cyber Security, Circular Economy and Sustainability, Data Integration, Data Visualization,
+Digital Society and E-Inclusion, Digital solutions, Drones, Economy and Finance, Edge devices, Education, Electronics, Energy,
+Energy and Environment, Food and Beverage, Gender Equality and Diversity, GreenTech, Health care, Healthcare,
+ICT (Information and Communication Technologies), Industrial Automation, Industrial Biotech, Information and Communication Technologies (ICT),
+Internet of Things, IoT, Machine Learning, Manufacturing, Marine and Maritime Research, Materials, Media and Entertainment, Mobility,
+Nanotechnology and Advanced Materials, Natural Resources, Next Generation Internet, Nuclear, Quantum, Renewable Energy, Robotics, Robotics and Automation, Security and Defense, Smart Cities, Social Innovation and Community Development, Social Sciences and Humanities, Sustainability, Textiles, Tourism, Transportation, Virtual Reality
 User input:
 """ + "\"" + userInput + "\"";
         Map<String, Object> requestBody = Map.of(

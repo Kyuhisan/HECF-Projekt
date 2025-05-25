@@ -6,9 +6,10 @@ import './style.css';
 type SmartSearchProps = {
   value: string;
   onChange: (value: string) => void;
+  onKeywordsChange?: (keywords: string[]) => void;
 };
 
-const SmartSearch = ({ value, onChange }: SmartSearchProps) => {
+const SmartSearch = ({ value, onChange, onKeywordsChange }: SmartSearchProps) => {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -18,6 +19,7 @@ const SmartSearch = ({ value, onChange }: SmartSearchProps) => {
         setLoading(true);
         const extracted = await extractKeywords(val);
         setKeywords(extracted);
+        onKeywordsChange?.(extracted);
         setLoading(false);
       },
       800,

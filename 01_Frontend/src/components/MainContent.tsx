@@ -30,6 +30,7 @@ function formatEuro(budget: string | null): string {
 const MainContent = ({ filters, listings }: Props) => {
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchKeywords, setSearchKeywords] = useState<string[]>([]);
 
   useEffect(() => {
     const results = listings.filter((listing) => {
@@ -40,10 +41,18 @@ const MainContent = ({ filters, listings }: Props) => {
       const matchesBudget = isNaN(listingBudget) || listingBudget <= filters.budget;
       const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
 
-      return matchesIndustries && matchesStatus && matchesBudget && matchesSource && matchesDeadline;
+    const lowerDescription = listing.description?.toLowerCase() ?? "";
+    const lowerTechnologies = (listing.technologies ?? []).map(t => t.toLowerCase());
+    const lowerIndustries = (listing.industries ?? []).map(i => i.toLowerCase());
+    const keywordMatch = searchKeywords.length === 0 || searchKeywords.some(k => {
+      const kw = k.toLowerCase();
+      return lowerDescription.includes(kw) || lowerTechnologies.includes(kw) || lowerIndustries.includes(kw);
+    });
+
+      return matchesIndustries && matchesStatus && matchesBudget && matchesSource && matchesDeadline && keywordMatch;
     });
     setFilteredListings(results);
-  }, [listings, filters]);
+  }, [listings, filters,searchKeywords]);
 
   return (
     <div className="main-content right-shift">
@@ -53,6 +62,7 @@ const MainContent = ({ filters, listings }: Props) => {
           <SmartSearch
             value={searchTerm}
             onChange={setSearchTerm}
+            onKeywordsChange={setSearchKeywords}
           ></SmartSearch>
           {/* Dodal SmartSearch komponento za api */}
         
@@ -69,6 +79,9 @@ const MainContent = ({ filters, listings }: Props) => {
               </p>
               <p><strong>Budget:</strong> {formatEuro(listing.budget)}</p>
               <p><strong>Source:</strong> {listing.source}</p>
+
+              <p><strong>Industries:</strong> {listing.industries?.join(", ") || "Not specified"}</p>
+              <p><strong>Technologies:</strong> {listing.technologies?.join(", ") || "Not specified"}</p>
               <a href={listing.url} target="_blank" rel="noopener noreferrer">View Listing</a>
             </div>
           ))}

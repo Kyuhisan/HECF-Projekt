@@ -11,9 +11,11 @@ export interface Listing {
   url: string;
   title: string;
   summary: string | null;
+   description: string | null;
   deadlineDate: string;
   budget: string;
   industries: string[] | null;
+   technologies: string[] | null;
 };
 
 function App() {

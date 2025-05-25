@@ -50,7 +50,7 @@ User input: \"""" + userInput + "\"";
                 .uri(apiUrl)
                 .header("Authorization", "Bearer " + apiKey)
                 .header("HTTP-Referer", "http://localhost:5173") // lahko poljubno
-                .header("X-Title", "HECF-SmartSearch") // ime tvoje aplikacije
+                .header("X-Title", "HECF-SmartSearch") // ime tvoje aplikacije kaj je v titlu
                 .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
                 .retrieve()

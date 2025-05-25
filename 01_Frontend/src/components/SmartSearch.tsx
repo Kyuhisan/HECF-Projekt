@@ -64,6 +64,7 @@ const SmartSearch = ({ value, onChange, onKeywordsChange }: SmartSearchProps) =>
             )}
           </button>
         </div>
+        
 
         {keywords.length > 0 && (
           <div className="keyword-results">

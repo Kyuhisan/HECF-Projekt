@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import "./style.css";
 import SmartSearch from "./SmartSearch";
-import { set } from "lodash";
 import type { Listing } from "../App";
 
 type Props = {
   filters: {
-    technologies: string[];
+    industries: string[];
     status: string[];
     source: string[];
     budget: number;
@@ -34,14 +33,14 @@ const MainContent = ({ filters, listings }: Props) => {
 
   useEffect(() => {
     const results = listings.filter((listing) => {
-      //const matchesCategory = filters.category.length === 0 || filters.category.includes(listing.category);
+      const matchesIndustries = filters.industries.length === 0 || (listing.industries !== null && filters.industries?.every((ind) => listing.industries?.includes(ind)));
       const matchesStatus = !filters.status || filters.status.length === 0 || filters.status.includes(listing.status);
       const matchesSource = filters.source.length === 0 || filters.source.includes(listing.source);
       const listingBudget = Number(listing.budget);
       const matchesBudget = isNaN(listingBudget) || listingBudget <= filters.budget;
       const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
 
-      return matchesStatus && matchesBudget && matchesSource && matchesDeadline;
+      return matchesIndustries && matchesStatus && matchesBudget && matchesSource && matchesDeadline;
     });
     setFilteredListings(results);
   }, [listings, filters]);
@@ -68,13 +67,13 @@ const MainContent = ({ filters, listings }: Props) => {
                   {listing.summary ?? "No summary avaliable."}
                 </span>
               </p>
-              <p><p><strong>Budget:</strong> {formatEuro(listing.budget)}</p></p>
+              <p><strong>Budget:</strong> {formatEuro(listing.budget)}</p>
               <p><strong>Source:</strong> {listing.source}</p>
               <a href={listing.url} target="_blank" rel="noopener noreferrer">View Listing</a>
             </div>
           ))}
 
-          {listings.length === 0 && <p>No forthcoming listings found.</p>}
+          {listings.length === 0 && <p className="spinner"></p>}
         </div>
       </div>
     </div>

@@ -3,25 +3,26 @@ import { useState } from 'react';
 
 type Props = {
   filters: {
-    technologies: string[];
+    industries: string[];
     status: string[];
     source: string[];
     budget: number;
     deadLine: string;
   };
   onFilterChange: (filters: Props['filters']) => void;
+  industries: string[];
 }
 
 const filterOption = {
-  technologies: ['Technology', 'Science', 'Art', 'History'],
   status: ['Forthcoming', 'Open', 'Closed'],
   source: ['ec.europa.eu', 'getonepass.eu', 'cascadefunding.eu'],
 };
 
-const Sidebar = ({ filters, onFilterChange }: Props) => {
+const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     
     const toggle = (key: string) => {
+      console.log("Toggling dropdown for:", key);
         setOpenDropdown(openDropdown === key ? null : key);
     }
 
@@ -43,13 +44,32 @@ const Sidebar = ({ filters, onFilterChange }: Props) => {
       onFilterChange({ ...filters, deadLine: formatted });
     };
 
-    //const uniqueCategories = Array.from(new Set(listings.flatMap(l => l.technologies)));
-
     return (
      <aside className="sidebar">
       <div className="sidebar-header">
         <h2>🔍 Filters</h2>
       </div>
+      {/* Industries dinamicni filter */}
+      <div className="filter-group" key='industries'>
+        <div className="dropdown-header" onClick={() => toggle('industries')}>
+          Industries
+        </div>
+        {openDropdown === 'industries' && (
+          <div className="dropdown-content">
+            {industries.map((industry) => (
+              <label key={industry}>
+                <input
+                  type="checkbox"
+                  checked={filters.industries.includes(industry)}
+                  onChange={() => handleCheckboxChange('industries', industry)}
+                />
+                {industry}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
       {Object.entries(filterOption).map(([key, values]) => (
         <div className="filter-group" key={key}>
           <div className="dropdown-header" onClick={() => toggle(key)}>
@@ -97,6 +117,20 @@ const Sidebar = ({ filters, onFilterChange }: Props) => {
           onChange={handleDateChange}
         />
       </div>
+
+      {/* Reset filters gumb */}
+      <button
+        className="reset-button"
+        onClick={() => onFilterChange({
+          industries: [],
+          status: [],
+          source: [],
+          budget: 100000000,
+          deadLine: "",
+        })}
+      >
+        Reset Filters
+      </button>
     </aside>
     );
 };

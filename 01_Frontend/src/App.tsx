@@ -13,19 +13,26 @@ export interface Listing {
   summary: string | null;
   deadlineDate: string;
   budget: string;
-  technologies: string[];
+  industries: string[] | null;
 };
 
 function App() {
   const [filters, setFilters] = useState({
     status: [] as string[],
     source: [] as string[],
-    technologies: [] as string[],
+    industries: [] as string[],
     budget: 100000000,
     deadLine: "",
   });
 
-  const [listings, setListings] = useState([]);
+  const [listings, setListings] = useState<Listing[]>([]);
+
+  const allIndustries = listings
+    .map(l => l.industries)
+    .filter((ind): ind is string[] => Array.isArray(ind))
+    .flat();
+
+  const uniqueIndustries = Array.from(new Set(allIndustries));  
 
   useEffect(() => {
     api
@@ -36,7 +43,7 @@ function App() {
 
   return (
     <div className="layout">
-      <Sidebar filters={filters} onFilterChange={setFilters}/>
+      <Sidebar filters={filters} onFilterChange={setFilters} industries={uniqueIndustries}/>
       <MainContent filters={filters} listings={listings}/>
     </div>
   );

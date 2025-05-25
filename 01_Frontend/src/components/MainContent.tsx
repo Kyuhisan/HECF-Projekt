@@ -1,27 +1,18 @@
 import { useEffect, useState } from "react";
 import "./style.css";
-import { api } from "../api";
 import SmartSearch from "./SmartSearch";
-
-type Listing = {
-  id: string;
-  status: string;
-  source: string;
-  url: string;
-  title: string;
-  summary: string | null;
-  deadlineDate: string;
-  budget: string;
-};
+import { set } from "lodash";
+import type { Listing } from "../App";
 
 type Props = {
   filters: {
-    category: string[];
+    technologies: string[];
     status: string[];
     source: string[];
     budget: number;
     deadLine: string;
   };
+  listings: Listing[];
 };
 
 function formatEuro(budget: string | null): string {
@@ -37,17 +28,9 @@ function formatEuro(budget: string | null): string {
   return formatted;
 }
 
-const MainContent = ({ filters }: Props) => {
-  const [listings, setListings] = useState<Listing[]>([]);
+const MainContent = ({ filters, listings }: Props) => {
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    api
-      .get("/listings/show/all")
-      .then((response) => setListings(response.data))
-      .catch((error) => console.error("Error fetching listings:", error));
-  }, []);
 
   useEffect(() => {
     const results = listings.filter((listing) => {
@@ -90,7 +73,7 @@ const MainContent = ({ filters }: Props) => {
               <a href={listing.url} target="_blank" rel="noopener noreferrer">View Listing</a>
             </div>
           ))}
-          
+
           {listings.length === 0 && <p>No forthcoming listings found.</p>}
         </div>
       </div>

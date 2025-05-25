@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 type Props = {
   filters: {
-    category: string[];
+    technologies: string[];
     status: string[];
     source: string[];
     budget: number;
@@ -13,7 +13,7 @@ type Props = {
 }
 
 const filterOption = {
-  category: ['Technology', 'Science', 'Art', 'History'],
+  technologies: ['Technology', 'Science', 'Art', 'History'],
   status: ['Forthcoming', 'Open', 'Closed'],
   source: ['ec.europa.eu', 'getonepass.eu', 'cascadefunding.eu'],
 };
@@ -42,6 +42,8 @@ const Sidebar = ({ filters, onFilterChange }: Props) => {
       const formatted = `${day}/${month}/${year}`;
       onFilterChange({ ...filters, deadLine: formatted });
     };
+
+    //const uniqueCategories = Array.from(new Set(listings.flatMap(l => l.technologies)));
 
     return (
      <aside className="sidebar">

@@ -27,6 +27,11 @@ const SmartSearch = ({ value, onChange, onKeywordsChange }: SmartSearchProps) =>
     ),
     []
   );
+   const handleClear = () => {
+    setKeywords([]);
+    onKeywordsChange?.([]);
+    onChange?.('');
+  };
 
   return (
     <>
@@ -63,12 +68,23 @@ const SmartSearch = ({ value, onChange, onKeywordsChange }: SmartSearchProps) =>
               </svg>
             )}
           </button>
+          <div className="bottom">
+          <div className="bottom-left">+</div>
+          <div className="bottom-right">Mistral-7b</div>
+          </div>
+          
+          
         </div>
         
 
         {keywords.length > 0 && (
           <div className="keyword-results">
             <strong>Recommended results : </strong>
+
+            <div className="keyword-header">
+              
+              <button className="clear-button" onClick={handleClear}>Clear</button>
+            </div>
             
             <div className="container-keywords">
               {keywords.map((k) => (

@@ -46,7 +46,7 @@ const MainContent = ({ filters, listings }: Props) => {
     const lowerIndustries = (listing.industries ?? []).map(i => i.toLowerCase());
     const keywordMatch = searchKeywords.length === 0 || searchKeywords.some(k => {
       const kw = k.toLowerCase();
-      return lowerDescription.includes(kw) || lowerTechnologies.includes(kw) || lowerIndustries.includes(kw);
+      return lowerDescription.includes(" "+kw +" ") || lowerTechnologies.includes(" "+kw +" ") || lowerIndustries.includes(" "+kw +" ");
     });
 
       return matchesIndustries && matchesStatus && matchesBudget && matchesSource && matchesDeadline && keywordMatch;

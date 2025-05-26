@@ -6,7 +6,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: rgb(250, 250, 250);
+  background: rgb(255, 255, 255);
   color: #0e0e0e;
 }
 
@@ -21,7 +21,7 @@ body {
   display: flex;
   align-items: flex-start;
   width: 100%;
-  padding: 40px;
+  padding:8px;
   margin: 0;
 }
 
@@ -82,11 +82,13 @@ body {
   flex-direction: column;
   align-items: center;
   flex: 1;
-  padding: 2rem 3rem;
-  max-width: 1000px;
+  padding: 2rem 6rem;
+  max-width: 1200px;
   width: 100%;
   text-align: center;
   padding-top: 50px;
+  background-color: rgb(252, 252, 252);
+  border-radius: 14px;
 }
 
 /* Shift main content more to the center */
@@ -114,8 +116,9 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
   outline: none;
-  width: 85%;
+  width: 75%;
   padding-bottom: 25px;
+  position: relative;
   
 }
 
@@ -198,9 +201,32 @@ body {
   height: 30px;
   border: none;
   cursor: pointer;
-  margin-top: 10px;
-  margin-right:8px ;
+  margin-top: 12px;
+  margin-right:12px ;
   margin-left: 15px;
+}
+.bottom {
+  position: absolute;
+  bottom: 6px;
+  left: 24px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #333;
+  pointer-events: none; /* to make it non-clickable */
+}
+
+.bottom-left {
+  color: black;
+  font-size: 26px;
+}
+
+.bottom-right {
+  color: #4e4e4e;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 10px;
 }
 
 .search-button:hover {
@@ -246,15 +272,40 @@ body {
 }
 .keyword-item {
   background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px #8bbffa;
-  padding: 8px;
-  font-weight: bold;
+  border-radius: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  font-size: 14px;
+  font-weight:bold;
   color: #1f2937; /* temno siva */
   width: fit-content;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   cursor: grab;
 }
+.clear-button {
+  margin-left: auto;
+  background-color: #3b77f7;
+  color: white;
+  border-radius: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 8px;
+  transition: color 0.2s ease;
+}
+
+.clear-button:hover {
+  background-color: #6daffc;
+}
+
+.keyword-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
 
 /* Reset button */
 .reset-button {

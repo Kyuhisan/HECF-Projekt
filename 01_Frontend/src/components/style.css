@@ -109,7 +109,6 @@ body {
   margin-bottom: 1.5rem;
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
   background-color: #ffffff;
   border: 1px solid #f0f0f0;
   border-radius: 24px;
@@ -203,7 +202,7 @@ body {
   cursor: pointer;
   margin-top: 12px;
   margin-right:12px ;
-  margin-left: 15px;
+  margin-left: 6px;
 }
 .bottom {
   position: absolute;
@@ -286,12 +285,12 @@ body {
   margin-left: auto;
   background-color: #3b77f7;
   color: white;
-  border-radius: 14px;
+  border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: none;
   cursor: pointer;
-  font-size: 13px;
-  padding: 8px;
+  font-size: 13.5px;
+  padding: 7px;
   transition: color 0.2s ease;
 }
 

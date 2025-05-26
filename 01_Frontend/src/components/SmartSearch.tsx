@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import debounce from "lodash/debounce";
 import { extractKeywords } from "../OpenAI/extractKeywords";
-import './style.css';
+import "./style.css";
 
 type SmartSearchProps = {
   value: string;
@@ -9,7 +9,11 @@ type SmartSearchProps = {
   onKeywordsChange?: (keywords: string[]) => void;
 };
 
-const SmartSearch = ({ value, onChange, onKeywordsChange }: SmartSearchProps) => {
+const SmartSearch = ({
+  value,
+  onChange,
+  onKeywordsChange,
+}: SmartSearchProps) => {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -27,12 +31,11 @@ const SmartSearch = ({ value, onChange, onKeywordsChange }: SmartSearchProps) =>
     ),
     []
   );
-   const handleClear = () => {
+  const handleClear = () => {
     setKeywords([]);
     onKeywordsChange?.([]);
-    onChange?.('');
+    onChange?.("");
   };
-
   return (
     <>
       <div className="title">HECF-SmartSearch</div>
@@ -45,6 +48,9 @@ const SmartSearch = ({ value, onChange, onKeywordsChange }: SmartSearchProps) =>
             value={value}
             onChange={(e) => onChange(e.target.value)}
           />
+          <div className="keyword-header">
+              <button className="clear-button" onClick={handleClear}>Clear</button>
+            </div>
           <button
             onClick={() => handleExtract(value)}
             disabled={loading || !value}
@@ -69,29 +75,20 @@ const SmartSearch = ({ value, onChange, onKeywordsChange }: SmartSearchProps) =>
             )}
           </button>
           <div className="bottom">
-          <div className="bottom-left">+</div>
-          <div className="bottom-right">Mistral-7b</div>
+            <div className="bottom-left">+</div>
+            <div className="bottom-right">Mistral-7b-</div>
           </div>
-          
-          
         </div>
-        
 
         {keywords.length > 0 && (
           <div className="keyword-results">
             <strong>Recommended results : </strong>
 
-            <div className="keyword-header">
-              
-              <button className="clear-button" onClick={handleClear}>Clear</button>
-            </div>
-            
+          
+
             <div className="container-keywords">
               {keywords.map((k) => (
-                <div
-                  key={k}
-                  className="keyword-item"
-                >
+                <div key={k} className="keyword-item">
                   {k}
                 </div>
               ))}

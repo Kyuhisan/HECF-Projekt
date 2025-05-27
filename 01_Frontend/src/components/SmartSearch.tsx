@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import debounce from "lodash/debounce";
 import { extractKeywords } from "../OpenAI/extractKeywords";
 import "./style.css";
+import { Bot,ListRestart,ArrowDownFromLine  } from 'lucide-react';
 
 type SmartSearchProps = {
   value: string;
@@ -49,7 +50,9 @@ const SmartSearch = ({
             onChange={(e) => onChange(e.target.value)}
           />
           <div className="keyword-header">
-              <button className="clear-button" onClick={handleClear}>Clear</button>
+              <button className="clear-button" onClick={handleClear}><ListRestart size={21}/>
+
+</button>
             </div>
           <button
             onClick={() => handleExtract(value)}
@@ -75,14 +78,13 @@ const SmartSearch = ({
             )}
           </button>
           <div className="bottom">
-            <div className="bottom-left">+</div>
+            <div className="bottom-left"> <Bot size={21}/></div>
             <div className="bottom-right">Mistral-7b-</div>
           </div>
         </div>
 
         {keywords.length > 0 && (
           <div className="keyword-results">
-            <strong>Recommended results : </strong>
 
           
 

@@ -87,14 +87,13 @@ body {
   width: 100%;
   text-align: center;
   padding-top: 50px;
-  /* background-color: rgb(255, 255, 255); */
   border-radius: 14px;
 }
 
-/* Shift main content more to the center
+/* Shift main content more to the center */
 .right-shift {
   margin-left: 150px;
-} */
+}
 
 .title {
   font-size: 3.5rem;
@@ -113,6 +112,7 @@ body {
   border: 1px solid #f0f0f0;
   border-radius: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+border: #d1d5db 1px solid;
   transition: all 0.2s ease;
   outline: none;
   width: 75%;
@@ -265,7 +265,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 1rem;
+  margin-top: 0rem;
   margin-bottom: 1rem;
   
 }
@@ -273,7 +273,9 @@ body {
   background-color: white;
   border-radius: 14px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 5px;
+  padding: 4px;
+  padding-left: 12px;
+  padding-right: 12px;
   font-size: 14px;
   font-weight:bold;
   color: #1f2937; /* temno siva */
@@ -289,8 +291,8 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: none;
   cursor: pointer;
-  font-size: 13.5px;
-  padding: 7px;
+  font-size: 4.5px;
+  padding: 4px;
   transition: color 0.2s ease;
 }
 

@@ -87,14 +87,14 @@ body {
   width: 100%;
   text-align: center;
   padding-top: 50px;
-  background-color: rgb(252, 252, 252);
+  /* background-color: rgb(255, 255, 255); */
   border-radius: 14px;
 }
 
-/* Shift main content more to the center */
+/* Shift main content more to the center
 .right-shift {
   margin-left: 150px;
-}
+} */
 
 .title {
   font-size: 3.5rem;

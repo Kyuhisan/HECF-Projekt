@@ -46,6 +46,8 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
       onFilterChange({ ...filters, deadLine: formatted });
     };
 
+    const sortedIndustries = [...industries].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
     return (
      <aside className="sidebar">
       <div className="sidebar-header">
@@ -58,7 +60,7 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
         </div>
         {openDropdowns['industries'] && (
           <div className="dropdown-content">
-            {industries.map((industry) => (
+            {sortedIndustries.map((industry) => (
               <label key={industry}>
                 <input
                   type="checkbox"
@@ -93,60 +95,61 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
           )}
         </div>
       ))}
-      {/* Budget slider */}
-<div className='filter-group'>
-  <div className="slider-container">
-    <div className="slider-header">
-      <div className="slider-title">
-       <b>Budget</b> 
-      </div>
 
-    </div>
-    
-    <div className="slider-wrapper">
-      <div className="slider-track">
-        <div 
-          className="slider-fill" 
-          style={{width: `${(filters.budget / 100000000) * 100}%`}}
-        ></div>
-        <div 
-          className="slider-thumb" 
-          style={{left: `${(filters.budget / 100000000) * 100}%`}}
-        ></div>
+      {/* Budget slider */}
+      <div className='filter-group'>
+        <div className="slider-container">
+          <div className="slider-header">
+            <div className="slider-title">
+            <b>Budget</b> 
+            </div>
+
+          </div>
+          
+          <div className="slider-wrapper">
+            <div className="slider-track">
+              <div 
+                className="slider-fill" 
+                style={{width: `${(filters.budget / 100000000) * 100}%`}}
+              ></div>
+              <div 
+                className="slider-thumb" 
+                style={{left: `${(filters.budget / 100000000) * 100}%`}}
+              ></div>
+            </div>
+            
+            <input
+              type="range"
+              min={0}
+              max={100000000}
+              step={1000000}
+              value={filters.budget || 0}
+              onChange={(e) => onFilterChange({...filters, budget: Number(e.target.value)})}
+              className="hidden-slider"
+            />
+            
+            <div className="slider-ticks">
+              <div className="tick"></div>
+              <div className="tick"></div>
+              <div className="tick"></div>
+              <div className="tick"></div>
+              <div className="tick"></div>
+              <div className="tick"></div>
+              <div className="tick"></div>
+            </div>
+            
+            <div className="slider-labels">
+              <span>0€</span>
+              <span>50M€</span>
+              <span>100M€</span>
+            </div>
+            
+            <div className="budget-display">
+              {filters.budget.toLocaleString()}€
+            </div>
+          </div>
+        </div>
       </div>
-      
-      <input
-        type="range"
-        min={0}
-        max={100000000}
-        step={1000000}
-        value={filters.budget || 0}
-        onChange={(e) => onFilterChange({...filters, budget: Number(e.target.value)})}
-        className="hidden-slider"
-      />
-      
-      <div className="slider-ticks">
-        <div className="tick"></div>
-        <div className="tick"></div>
-        <div className="tick"></div>
-        <div className="tick"></div>
-        <div className="tick"></div>
-        <div className="tick"></div>
-        <div className="tick"></div>
-      </div>
-      
-      <div className="slider-labels">
-        <span>0€</span>
-        <span>50M€</span>
-        <span>100M€</span>
-      </div>
-      
-      <div className="budget-display">
-        {filters.budget.toLocaleString()}€
-      </div>
-    </div>
-  </div>
-</div>
 
       {/* Datum obravnava za filter */}
       <div className='filter-group'>

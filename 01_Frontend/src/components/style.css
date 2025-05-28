@@ -83,7 +83,7 @@ body {
   align-items: center;
   flex: 1;
   padding: 2rem 6rem;
-  max-width: 1200px;
+  max-width: auto;
   width: 100%;
   text-align: center;
   padding-top: 50px;
@@ -92,7 +92,7 @@ body {
 
 /* Shift main content more to the center */
 .right-shift {
-  margin-left: 150px;
+  margin-left: auto;
 }
 
 .title {

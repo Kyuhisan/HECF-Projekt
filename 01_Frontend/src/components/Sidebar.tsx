@@ -19,11 +19,13 @@ const filterOption = {
 };
 
 const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
-    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+    const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
     
     const toggle = (key: string) => {
-      console.log("Toggling dropdown for:", key);
-        setOpenDropdown(openDropdown === key ? null : key);
+      setOpenDropdowns(prev => ({
+        ...prev,
+        [key]: !prev[key],
+      }));
     }
 
     const handleCheckboxChange = (group: keyof Props['filters'], value: string) => {
@@ -54,7 +56,7 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
         <div className="dropdown-header" onClick={() => toggle('industries')}>
           Industries
         </div>
-        {openDropdown === 'industries' && (
+        {openDropdowns['industries'] && (
           <div className="dropdown-content">
             {industries.map((industry) => (
               <label key={industry}>
@@ -75,7 +77,7 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
           <div className="dropdown-header" onClick={() => toggle(key)}>
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </div>
-          {openDropdown === key && (
+          {openDropdowns[key] && (
             <div className="dropdown-content">
               {values.map((value) => (
                 <label key={value}>

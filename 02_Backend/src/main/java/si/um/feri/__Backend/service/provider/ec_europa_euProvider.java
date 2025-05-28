@@ -17,7 +17,6 @@ import si.um.feri.__Backend.model.Listing;
 import si.um.feri.__Backend.model.rawListings.ec_europa_euRaw;
 import si.um.feri.__Backend.repository.ListingRepository;
 import org.bson.Document;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -238,7 +237,6 @@ public class ec_europa_euProvider {
                 }
             }
             listingsToSave.add(listing);
-
         }
         listingRepository.saveAll(listingsToSave);
     }

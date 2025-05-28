@@ -19,11 +19,14 @@ const filterOption = {
 };
 
 const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
-    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+    const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+    const [industrySearchTerm, setIndustrySearchTerm] = useState('');
     
     const toggle = (key: string) => {
-      console.log("Toggling dropdown for:", key);
-        setOpenDropdown(openDropdown === key ? null : key);
+      setOpenDropdowns(prev => ({
+        ...prev,
+        [key]: !prev[key],
+      }));
     }
 
     const handleCheckboxChange = (group: keyof Props['filters'], value: string) => {
@@ -44,6 +47,14 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
       onFilterChange({ ...filters, deadLine: formatted });
     };
 
+    // Razpored industrij po abecedi
+    const sortedIndustries = [...industries].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+    // Filtriranje industrij glede na iskalni niz
+    const filteredIndustries = sortedIndustries.filter(industry => 
+      industry.toLowerCase().includes(industrySearchTerm.toLowerCase())
+    );
+
     return (
      <aside className="sidebar">
       <div className="sidebar-header">
@@ -54,9 +65,16 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
         <div className="dropdown-header" onClick={() => toggle('industries')}>
           Industries
         </div>
-        {openDropdown === 'industries' && (
+        {openDropdowns['industries'] && (
           <div className="dropdown-content">
-            {industries.map((industry) => (
+            <input
+              type="text"
+              placeholder="Search industries..."
+              className="industry-dropdown-search"
+              value={industrySearchTerm}
+              onChange={(e) => setIndustrySearchTerm(e.target.value)}
+            />
+            {filteredIndustries.map((industry) => (
               <label key={industry}>
                 <input
                   type="checkbox"
@@ -75,7 +93,7 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
           <div className="dropdown-header" onClick={() => toggle(key)}>
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </div>
-          {openDropdown === key && (
+          {openDropdowns[key] && (
             <div className="dropdown-content">
               {values.map((value) => (
                 <label key={value}>
@@ -91,60 +109,61 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
           )}
         </div>
       ))}
-      {/* Budget slider */}
-<div className='filter-group'>
-  <div className="slider-container">
-    <div className="slider-header">
-      <div className="slider-title">
-       <b>Budget</b> 
-      </div>
 
-    </div>
-    
-    <div className="slider-wrapper">
-      <div className="slider-track">
-        <div 
-          className="slider-fill" 
-          style={{width: `${(filters.budget / 100000000) * 100}%`}}
-        ></div>
-        <div 
-          className="slider-thumb" 
-          style={{left: `${(filters.budget / 100000000) * 100}%`}}
-        ></div>
+      {/* Budget slider */}
+      <div className='filter-group'>
+        <div className="slider-container">
+          <div className="slider-header">
+            <div className="slider-title">
+            <b>Budget</b> 
+            </div>
+
+          </div>
+          
+          <div className="slider-wrapper">
+            <div className="slider-track">
+              <div 
+                className="slider-fill" 
+                style={{width: `${(filters.budget / 100000000) * 100}%`}}
+              ></div>
+              <div 
+                className="slider-thumb" 
+                style={{left: `${(filters.budget / 100000000) * 100}%`}}
+              ></div>
+            </div>
+            
+            <input
+              type="range"
+              min={0}
+              max={100000000}
+              step={1000000}
+              value={filters.budget || 0}
+              onChange={(e) => onFilterChange({...filters, budget: Number(e.target.value)})}
+              className="hidden-slider"
+            />
+            
+            <div className="slider-ticks">
+              <div className="tick"></div>
+              <div className="tick"></div>
+              <div className="tick"></div>
+              <div className="tick"></div>
+              <div className="tick"></div>
+              <div className="tick"></div>
+              <div className="tick"></div>
+            </div>
+            
+            <div className="slider-labels">
+              <span>0€</span>
+              <span>50M€</span>
+              <span>100M€</span>
+            </div>
+            
+            <div className="budget-display">
+              {filters.budget.toLocaleString()}€
+            </div>
+          </div>
+        </div>
       </div>
-      
-      <input
-        type="range"
-        min={0}
-        max={100000000}
-        step={1000000}
-        value={filters.budget || 0}
-        onChange={(e) => onFilterChange({...filters, budget: Number(e.target.value)})}
-        className="hidden-slider"
-      />
-      
-      <div className="slider-ticks">
-        <div className="tick"></div>
-        <div className="tick"></div>
-        <div className="tick"></div>
-        <div className="tick"></div>
-        <div className="tick"></div>
-        <div className="tick"></div>
-        <div className="tick"></div>
-      </div>
-      
-      <div className="slider-labels">
-        <span>0€</span>
-        <span>50M€</span>
-        <span>100M€</span>
-      </div>
-      
-      <div className="budget-display">
-        {filters.budget.toLocaleString()}€
-      </div>
-    </div>
-  </div>
-</div>
 
       {/* Datum obravnava za filter */}
       <div className='filter-group'>

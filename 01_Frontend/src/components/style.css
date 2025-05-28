@@ -61,7 +61,7 @@ body {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin: 10px 0;
-  max-height: 200px;
+  max-height: 400px;
   overflow-y: auto;
 }
 
@@ -76,6 +76,15 @@ body {
   margin-right: 0.5rem;
 }
 
+.industry-dropdown-search {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
 /* Main Content */
 .main-content {
   display: flex;
@@ -83,7 +92,7 @@ body {
   align-items: center;
   flex: 1;
   padding: 2rem 6rem;
-  max-width: 1200px;
+  max-width: auto;
   width: 100%;
   text-align: center;
   padding-top: 50px;
@@ -92,7 +101,7 @@ body {
 
 /* Shift main content more to the center */
 .right-shift {
-  margin-left: 150px;
+  margin-left: auto;
 }
 
 .title {
@@ -115,7 +124,7 @@ body {
 border: #d1d5db 1px solid;
   transition: all 0.2s ease;
   outline: none;
-  width: 75%;
+  width: 52.5%;
   padding-bottom: 25px;
   position: relative;
   
@@ -174,6 +183,28 @@ border: #d1d5db 1px solid;
   line-height: 1.5em;
   max-height: calc(1.5em * 5); /* 5 vrstic */
   display: -webkit-box;
+}
+
+/* View listings button */
+.view-listings-button {
+  background-color: #3b77f7;
+  font-weight: bold;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.view-listings-button a{
+  color: white;
+  text-decoration: none;
+}
+
+.view-listings-button:hover {
+  background-color: #6daffc;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Smart search */
@@ -440,3 +471,26 @@ border: #d1d5db 1px solid;
     }
   }
 
+/*Pagination button*/
+.pagination {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  flex-orientation: row;
+}
+
+.pagination-button {
+  background-color: #3b77f7;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagination-button:hover {
+  background-color: #6daffc;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}

@@ -5,8 +5,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class OpenAiService {
@@ -19,27 +25,51 @@ public class OpenAiService {
 
     private final WebClient webClient = WebClient.builder().build();
 
+    private String loadAllKeywordsFromFiles(List<String> filePaths) throws IOException {
+        Set<String> keywords = new LinkedHashSet<>();
+
+        for (String path : filePaths) {
+            List<String> lines = Files.readAllLines(Paths.get(path));
+            for (String line : lines) {
+                String cleaned = line.trim();
+                if (!cleaned.isEmpty()) {
+                    keywords.add(cleaned);
+                }
+            }
+        }
+
+        return keywords.stream()
+                .map(k -> "\"" + k + "\"")
+                .collect(Collectors.joining(", ", "[", "]"));
+    }
+
     public Mono<String> extractKeywords(String userInput) {
+        String keywordList;
+        try {
+            String baseDir = System.getProperty("user.dir") + "/output/keywords/";
+            keywordList = loadAllKeywordsFromFiles(List.of(
+                    baseDir + "scraper10/keywords.txt",
+                    baseDir + "scraper20/keywords.txt"
+            ));
+        } catch (IOException e) {
+            return Mono.error(new RuntimeException("Failed to load keywords from files", e));
+        }
+
         String prompt = """
 You are an assistant that classifies user input into high-level domains.
-From the list of keywords below, return only those that are semantically relevant to the user input.
-Always return at least one keyword, if any match.
+From the list of keywords below, return at least 10 keywords that are semantically or thematically relevant to the user input.
+Choose keywords that are directly or indirectly related to the concepts mentioned.
 
 Only return a JSON array of the selected keywords (as strings). Do not include any explanation or additional text.
 
-Only choose from the following keywords:
-["Advanced Manufacturing", "Advanced Manufacturing and Industry", "Agriculture", "Agriculture and Food", "AI and Big Data", "Aerospace",
-"Art", "Arts", "Artificial Intelligence", "AR/VR/XR", "Automotive", "Big Data", "Biotechnology", "Blockchain", "CleanTech", "Cloud Computing",
-"Construction", "Culture and Heritage", "Cyber Security", "Circular Economy and Sustainability", "Data Integration", "Data Visualization",
-"Digital Society and E-Inclusion", "Digital solutions", "Drones", "Economy and Finance", "Edge devices", "Education", "Electronics", "Energy",
-"Energy and Environment", "Food and Beverage", "Gender Equality and Diversity", "GreenTech", "Health care", "Healthcare",
-"ICT (Information and Communication Technologies)", "Industrial Automation", "Industrial Biotech", "Information and Communication Technologies (ICT)",
-"Internet of Things", "IoT", "Machine Learning", "Manufacturing", "Marine and Maritime Research", "Materials", "Media and Entertainment", "Mobility",
-"Nanotechnology and Advanced Materials", "Natural Resources", "Next Generation Internet", "Nuclear", "Quantum", "Renewable Energy", "Robotics", 
-"Robotics and Automation", "Security and Defense", "Smart Cities", "Social Innovation and Community Development", 
-"Social Sciences and Humanities", "Sustainability", "Textiles", "Tourism", "Transportation", "Virtual Reality"]
+Important:
+- You must select a minimum of 10 keywords, unless fewer than 10 are relevant.
+- Only choose from the provided list of keywords.
+- Do not invent new keywords.
 
-User input: \"""" + userInput + "\"";
+Only choose from the following keywords:
+""" + keywordList + "\n\nUser input: \"" + userInput + "\"";
+
         Map<String, Object> requestBody = Map.of(
                 "model", "mistralai/mistral-7b-instruct:free",  // FREE model
                 "messages", List.of(Map.of("role", "user", "content", prompt)),

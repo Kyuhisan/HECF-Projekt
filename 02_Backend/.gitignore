@@ -41,3 +41,4 @@ src/main/java/si/um/feri/__Backend/service/provider/scraper20Provider.java
 
 # actual data
 output/rawData/*
+output/keywords/*

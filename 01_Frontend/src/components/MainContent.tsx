@@ -3,6 +3,7 @@ import "./style.css";
 import SmartSearch from "./SmartSearch";
 import type { Listing } from "../App";
 import { set } from "lodash";
+import { CalendarClock, HandCoins, CodeXml,  KeyRound } from "lucide-react";
 
 type Props = {
   filters: {
@@ -33,65 +34,165 @@ const MainContent = ({ filters, listings }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchKeywords, setSearchKeywords] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15; 
+  const itemsPerPage = 15;
 
   useEffect(() => {
     const results = listings.filter((listing) => {
-      const matchesIndustries = filters.industries.length === 0 || (listing.industries !== null && filters.industries?.every((ind) => listing.industries?.includes(ind)));
-      const matchesStatus = !filters.status || filters.status.length === 0 || filters.status.includes(listing.status);
-      const matchesSource = filters.source.length === 0 || filters.source.includes(listing.source);
+      const matchesIndustries =
+        filters.industries.length === 0 ||
+        (listing.industries !== null &&
+          filters.industries?.every((ind) =>
+            listing.industries?.includes(ind)
+          ));
+      const matchesStatus =
+        !filters.status ||
+        filters.status.length === 0 ||
+        filters.status.includes(listing.status);
+      const matchesSource =
+        filters.source.length === 0 || filters.source.includes(listing.source);
       const listingBudget = Number(listing.budget);
-      const matchesBudget = isNaN(listingBudget) || listingBudget <= filters.budget;
-      const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
+      const matchesBudget =
+        isNaN(listingBudget) || listingBudget <= filters.budget;
+      const matchesDeadline =
+        !filters.deadLine || listing.deadlineDate === filters.deadLine;
 
       const lowerDescription = listing.description?.toLowerCase() ?? "";
-      const lowerTechnologies = (listing.technologies ?? []).map(t => t.toLowerCase());
-      const lowerIndustries = (listing.industries ?? []).map(i => i.toLowerCase());
-      const keywordMatch = searchKeywords.length === 0 || searchKeywords.some(k => {
-        const kw = k.toLowerCase();
-        return lowerDescription.includes(" "+kw +" ") || lowerTechnologies.includes(" "+kw +" ") || lowerIndustries.includes(" "+kw +" ");
-      });
+      const lowerTechnologies = (listing.technologies ?? []).map((t) =>
+        t.toLowerCase()
+      );
+      const lowerIndustries = (listing.industries ?? []).map((i) =>
+        i.toLowerCase()
+      );
+      const keywordMatch =
+        searchKeywords.length === 0 ||
+        searchKeywords.some((k) => {
+          const kw = k.toLowerCase();
+          return (
+            lowerDescription.includes(" " + kw + " ") ||
+            lowerTechnologies.includes(" " + kw + " ") ||
+            lowerIndustries.includes(" " + kw + " ")
+          );
+        });
 
-      return matchesIndustries && matchesStatus && matchesBudget && matchesSource && matchesDeadline && keywordMatch;
+      return (
+        matchesIndustries &&
+        matchesStatus &&
+        matchesBudget &&
+        matchesSource &&
+        matchesDeadline &&
+        keywordMatch
+      );
     });
     setFilteredListings(results);
-  }, [listings, filters,searchKeywords]);
+  }, [listings, filters, searchKeywords]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentListings = filteredListings.slice(indexOfFirstItem, indexOfLastItem);
+  const currentListings = filteredListings.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   return (
     <div className="main-content right-shift">
       <div className="content-wrapper">
-        
-          {/* Dodal SmartSearch komponento za api */}
-          <SmartSearch
-            value={searchTerm}
-            onChange={setSearchTerm}
-            onKeywordsChange={setSearchKeywords}
-          ></SmartSearch>
-          {/* Dodal SmartSearch komponento za api */}
-        
+        {/* Dodal SmartSearch komponento za api */}
+        <SmartSearch
+          value={searchTerm}
+          onChange={setSearchTerm}
+          onKeywordsChange={setSearchKeywords}
+        ></SmartSearch>
+        {/* Dodal SmartSearch komponento za api */}
+
         <div className="results">
           {currentListings.map((listing) => (
             <div className="result-item" key={listing.id}>
-              <h4>{listing.title}</h4>
-              <p><strong>Status:</strong> {listing.status}</p>
-              <p><strong>Deadline:</strong> {listing.deadlineDate}</p>
-              <p><strong>Summary:</strong>{" "}
-                <span className="summary-clamp">
-                  {listing.summary ?? "No summary avaliable."}
-                </span>
-              </p>
-              <p><strong>Budget:</strong> {formatEuro(listing.budget)}</p>
-              <p><strong>Source:</strong> {listing.source}</p>
+              {/* Header z naslovom in statusom/datumom */}
+              <div className="card-header">
+                <h4 className="card-title">{listing.title}</h4>
+                <div className="card-status-info">
+                  <span
+                    className={`status-badge ${listing.status.toLowerCase()}`}
+                  >
+                    {listing.status}
+                  </span>
+                  <span className="deadline-date">
+                    <CalendarClock size={15} /> {listing.deadlineDate}
+                  </span>
+                </div>
+              </div>
 
-              <p><strong>Industries:</strong> {listing.industries?.join(", ") || "Not specified"}</p>
-              <p><strong>Technologies:</strong> {listing.technologies?.join(", ") || "Not specified"}</p>
-              <button className="view-listings-button">
-                <a href={listing.url} target="_blank" rel="noopener noreferrer">View Listing</a>
-              </button>
+              {/* Glavna vsebina */}
+              <div className="card-content">
+                <p className="card-summary">
+                  <span className="summary-clamp">
+                    {listing.summary
+                      ? listing.summary.length > 200
+                        ? listing.summary.substring(0, 200) + "..."
+                        : listing.summary
+                      : "No summary available."}
+                  </span>
+                </p>
+
+                {/* Industries in Technologies */}
+                <div className="card-tags">
+                  {listing.industries && listing.industries.length > 0 && (
+                    <div className="tag-section">
+                      <span className="tag-section-title">Industries:</span>
+                      <div className="industries-tags">
+                        {listing.industries.map((industry, index) => (
+                          <span
+                            key={index}
+                            className={`tag-badge industry-tag industry-${
+                              index % 3
+                            }`}
+                          >
+                            {industry} <KeyRound size={14} />
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {listing.technologies && listing.technologies.length > 0 && (
+                    <div className="tag-section">
+                      <span className="tag-section-title">Technologies:</span>
+                      <div className="technologies-tags">
+                        {listing.technologies.map((tech, index) => (
+                          <span
+                            key={index}
+                            className={`tag-badge tech-tag tech-${index % 3}`}
+                          >
+                            {tech} <KeyRound size={14} />
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Budget */}
+                <div className="card-budget">
+                  <strong>
+                    <HandCoins /> {formatEuro(listing.budget)}
+                  </strong>
+                </div>
+              </div>
+
+              {/* Footer z source in gumbom */}
+              <div className="card-footer">
+                <span className="card-source">
+                  <CodeXml size={16} /> {listing.source}
+                </span>
+                <button className="view-listings-button">
+                  <a
+                    href={listing.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Listing
+                  </a>
+                </button>
+              </div>
             </div>
           ))}
 
@@ -109,7 +210,7 @@ const MainContent = ({ filters, listings }: Props) => {
               Previous
             </button>
             <span>Page {currentPage}</span>
-            <button 
+            <button
               className="pagination-button"
               disabled={indexOfLastItem >= filteredListings.length}
               onClick={() => setCurrentPage((prev) => prev + 1)}

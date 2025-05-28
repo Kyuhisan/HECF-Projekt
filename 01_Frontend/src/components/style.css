@@ -185,6 +185,28 @@ border: #d1d5db 1px solid;
   display: -webkit-box;
 }
 
+/* View listings button */
+.view-listings-button {
+  background-color: #3b77f7;
+  font-weight: bold;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.view-listings-button a{
+  color: white;
+  text-decoration: none;
+}
+
+.view-listings-button:hover {
+  background-color: #6daffc;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
 /* Smart search */
 
 .content-wrapper-search {

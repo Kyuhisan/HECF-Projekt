@@ -89,7 +89,9 @@ const MainContent = ({ filters, listings }: Props) => {
 
               <p><strong>Industries:</strong> {listing.industries?.join(", ") || "Not specified"}</p>
               <p><strong>Technologies:</strong> {listing.technologies?.join(", ") || "Not specified"}</p>
-              <a href={listing.url} target="_blank" rel="noopener noreferrer">View Listing</a>
+              <button className="view-listings-button">
+                <a href={listing.url} target="_blank" rel="noopener noreferrer">View Listing</a>
+              </button>
             </div>
           ))}
 

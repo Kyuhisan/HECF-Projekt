@@ -20,6 +20,7 @@ const filterOption = {
 
 const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
     const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+    const [industrySearchTerm, setIndustrySearchTerm] = useState('');
     
     const toggle = (key: string) => {
       setOpenDropdowns(prev => ({
@@ -46,7 +47,13 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
       onFilterChange({ ...filters, deadLine: formatted });
     };
 
+    // Razpored industrij po abecedi
     const sortedIndustries = [...industries].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+    // Filtriranje industrij glede na iskalni niz
+    const filteredIndustries = sortedIndustries.filter(industry => 
+      industry.toLowerCase().includes(industrySearchTerm.toLowerCase())
+    );
 
     return (
      <aside className="sidebar">
@@ -60,7 +67,14 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
         </div>
         {openDropdowns['industries'] && (
           <div className="dropdown-content">
-            {sortedIndustries.map((industry) => (
+            <input
+              type="text"
+              placeholder="Search industries..."
+              className="industry-dropdown-search"
+              value={industrySearchTerm}
+              onChange={(e) => setIndustrySearchTerm(e.target.value)}
+            />
+            {filteredIndustries.map((industry) => (
               <label key={industry}>
                 <input
                   type="checkbox"

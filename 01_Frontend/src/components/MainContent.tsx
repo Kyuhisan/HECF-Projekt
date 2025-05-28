@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./style.css";
 import SmartSearch from "./SmartSearch";
 import type { Listing } from "../App";
+import { set } from "lodash";
 
 type Props = {
   filters: {
@@ -31,6 +32,8 @@ const MainContent = ({ filters, listings }: Props) => {
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchKeywords, setSearchKeywords] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15; 
 
   useEffect(() => {
     const results = listings.filter((listing) => {
@@ -41,18 +44,22 @@ const MainContent = ({ filters, listings }: Props) => {
       const matchesBudget = isNaN(listingBudget) || listingBudget <= filters.budget;
       const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
 
-    const lowerDescription = listing.description?.toLowerCase() ?? "";
-    const lowerTechnologies = (listing.technologies ?? []).map(t => t.toLowerCase());
-    const lowerIndustries = (listing.industries ?? []).map(i => i.toLowerCase());
-    const keywordMatch = searchKeywords.length === 0 || searchKeywords.some(k => {
-      const kw = k.toLowerCase();
-      return lowerDescription.includes(" "+kw +" ") || lowerTechnologies.includes(" "+kw +" ") || lowerIndustries.includes(" "+kw +" ");
-    });
+      const lowerDescription = listing.description?.toLowerCase() ?? "";
+      const lowerTechnologies = (listing.technologies ?? []).map(t => t.toLowerCase());
+      const lowerIndustries = (listing.industries ?? []).map(i => i.toLowerCase());
+      const keywordMatch = searchKeywords.length === 0 || searchKeywords.some(k => {
+        const kw = k.toLowerCase();
+        return lowerDescription.includes(" "+kw +" ") || lowerTechnologies.includes(" "+kw +" ") || lowerIndustries.includes(" "+kw +" ");
+      });
 
       return matchesIndustries && matchesStatus && matchesBudget && matchesSource && matchesDeadline && keywordMatch;
     });
     setFilteredListings(results);
   }, [listings, filters,searchKeywords]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentListings = filteredListings.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div className="main-content right-shift">
@@ -67,7 +74,7 @@ const MainContent = ({ filters, listings }: Props) => {
           {/* Dodal SmartSearch komponento za api */}
         
         <div className="results">
-          {filteredListings.map((listing) => (
+          {currentListings.map((listing) => (
             <div className="result-item" key={listing.id}>
               <h4>{listing.title}</h4>
               <p><strong>Status:</strong> {listing.status}</p>
@@ -88,6 +95,27 @@ const MainContent = ({ filters, listings }: Props) => {
 
           {listings.length === 0 && <p className="spinner"></p>}
         </div>
+
+        {/*Gumb za paging --> max 15*/}
+        {filteredListings.length > itemsPerPage && (
+          <div className="pagination">
+            <button
+              className="pagination-button"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+            >
+              Previous
+            </button>
+            <span>Page {currentPage}</span>
+            <button 
+              className="pagination-button"
+              disabled={indexOfLastItem >= filteredListings.length}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

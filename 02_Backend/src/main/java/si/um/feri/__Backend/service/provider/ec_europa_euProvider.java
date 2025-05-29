@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -84,6 +85,7 @@ public class ec_europa_euProvider {
         saveRawLocally(allPages, outputPath);
         saveRawToMongo(allPages, "ec.europa.eu:" + queryFileName.replace("query", "").replace(".json", ""));
         saveFilteredToMongo(allResults);
+        generateKeywordsFromMongo();
 
         log.info("Finished fetching listings from ec.europa.eu");
     }
@@ -241,5 +243,30 @@ public class ec_europa_euProvider {
                 .replaceAll("&nbsp;", " ")
                 .replaceAll("&amp;", "&")
                 .replaceAll("\\s+", " ").trim();
+    }
+    public void saveIndustriesAndTechnologiesToFile(List<Listing> listings) throws IOException {
+        Set<String> uniqueItems = new HashSet<>();
+
+        for (Listing listing : listings) {
+            if (listing.getIndustries() != null) {
+                uniqueItems.addAll(listing.getIndustries());
+            }
+            if (listing.getTechnologies() != null) {
+                uniqueItems.addAll(listing.getTechnologies());
+            }
+        }
+
+        List<String> sorted = new ArrayList<>(uniqueItems);
+        Collections.sort(sorted);
+
+        String path = System.getProperty("user.dir") + "/output/keywords/ec_europa_eu/keywords.txt";
+        Files.createDirectories(Paths.get(path).getParent());
+        Files.write(Paths.get(path), sorted, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+        log.info("Saved {} keywords to file: {}", sorted.size(), path);
+    }
+    public void generateKeywordsFromMongo() throws IOException {
+        List<Listing> allListings = listingRepository.findAllBySource("ec.europa.eu");
+        saveIndustriesAndTechnologiesToFile(allListings);
     }
 }

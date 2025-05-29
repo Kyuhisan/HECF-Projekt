@@ -49,7 +49,9 @@ public class OpenAiService {
             String baseDir = System.getProperty("user.dir") + "/output/keywords/";
             keywordList = loadAllKeywordsFromFiles(List.of(
                     baseDir + "scraper10/keywords.txt",
-                    baseDir + "scraper20/keywords.txt"
+                    baseDir + "scraper20/keywords.txt",
+                    baseDir + "ec_europa_eu/keywords.txt",
+                    baseDir + "generic/keywords.txt"
             ));
         } catch (IOException e) {
             return Mono.error(new RuntimeException("Failed to load keywords from files", e));
@@ -57,15 +59,16 @@ public class OpenAiService {
 
         String prompt = """
 You are an assistant that classifies user input into high-level domains.
-From the list of keywords below, return at least 10 keywords that are semantically or thematically relevant to the user input.
+From the list of keywords below,  select **exactly between 10 and 20** that are semantically or thematically relevant to the user input.
 Choose keywords that are directly or indirectly related to the concepts mentioned.
 
 Only return a JSON array of the selected keywords (as strings). Do not include any explanation or additional text.
 
 Important:
-- You must select a minimum of 10 keywords, unless fewer than 10 are relevant.
-- Only choose from the provided list of keywords.
-- Do not invent new keywords.
+- Select at least 10 and no more than 20 keywords. Never return more than 20.
+- Avoid exact duplicates.
+- At least 90% of keywords must come from the provided list.
+- You may invent up to 2 additional keywords, if they are clearly relevant and missing from the list.
 
 Only choose from the following keywords:
 """ + keywordList + "\n\nUser input: \"" + userInput + "\"";

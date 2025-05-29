@@ -9,6 +9,10 @@ import {
   Factory,
    Eye
 } from "lucide-react";
+import { filter } from "lodash";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 type Props = {
   filters: {
@@ -78,6 +82,7 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
           <SlidersHorizontal /> Filters
         </h2>
       </div>
+
       {/* Industries dinamicni filter */}
       <div className="filter-group" key="industries">
         <div className="dropdown-wrapper">
@@ -227,12 +232,25 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
             <CalendarClock size={20}/> <b>Deadline</b>
           </label>
           <br />
-          <input
-            type="date"
+          <DatePicker
+            selected={
+              filters.deadLine
+                ? new Date(filters.deadLine.split("/").reverse().join("-"))
+                : null
+            }
+            onChange={(date: Date | null) => {
+              if (date) {
+                const formatted = `${date.getDate().toString().padStart(2, '0')}/${(
+                  date.getMonth() + 1
+                ).toString().padStart(2, '0')}/${date.getFullYear()}`;
+                onFilterChange({ ...filters, deadLine: formatted });
+              }
+            }}
+            dateFormat="dd/MM/yyyy"
+            placeholderText="dd/mm/yyyy"
             className="slider-title"
-            value={filters.deadLine || ""}
-            onChange={handleDateChange}
           />
+
         </div>
       </div>
 

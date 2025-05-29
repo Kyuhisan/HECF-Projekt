@@ -69,6 +69,10 @@ const MainContent = ({ filters, listings }: Props) => {
     setFilteredListings(results);
   }, [listings, filters, searchKeywords]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentListings = filteredListings.slice(

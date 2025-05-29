@@ -53,8 +53,8 @@ body {
   cursor: pointer;
   font-weight: bold;
   padding: 0.5rem;
-  background-color: transparent; /* Brez ozadja, ker ga zdaj dobi od wrapperja */
-  box-shadow: none; /* Odstranimo */
+  background-color: transparent; 
+  box-shadow: none; 
   border-radius: 0;
 }
 
@@ -65,9 +65,12 @@ body {
 
 .dropdown-content {
   padding: 24px;
-  background-color: transparent; /* Da se sklada z wrapperjem */
-  box-shadow: none; /* Odstranimo */
-  margin: 0; /* Odstranimo razmik */
+  background-color: transparent; 
+  box-shadow: none;
+  margin: 0; 
+  /* max-height: 250px;
+  overflow-y: auto;
+  scrollbar-width: thin; */
 }
 
 .dropdown-content label {
@@ -76,6 +79,15 @@ body {
   margin-bottom: 0.5rem;
   cursor: pointer;
 }
+
+/* .dropdown-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-content::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 4px;
+} */
 
 .dropdown-content input[type="checkbox"] {
   margin-right: 0.5rem;

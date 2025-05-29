@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import debounce from "lodash/debounce";
 import { extractKeywords } from "../OpenAI/extractKeywords";
 import "./style.css";
-import { Bot,ListRestart,ArrowDownFromLine  } from 'lucide-react';
+import { Bot,ListRestart,BrainCircuit, KeyRound ,Rocket,Boxes} from 'lucide-react';
 
 type SmartSearchProps = {
   value: string;
@@ -39,7 +39,7 @@ const SmartSearch = ({
   };
   return (
     <>
-      <div className="title">HECF-SmartSearch</div>
+      <div className="title"><Boxes size={40}/> HECF-SmartSearch</div>
 
       <div className="content-wrapper-search">
         <div className="search-bar">
@@ -79,7 +79,7 @@ const SmartSearch = ({
           </button>
           <div className="bottom">
             <div className="bottom-left"> <Bot size={21}/></div>
-            <div className="bottom-right">Mistral-7b-</div>
+            <div className="bottom-right">Mistral-7b</div>
           </div>
         </div>
 
@@ -89,9 +89,9 @@ const SmartSearch = ({
           
 
             <div className="container-keywords">
-              {keywords.map((k) => (
-                <div key={k} className="keyword-item">
-                  {k}
+              {keywords.map((k,index) => (
+                <div key={k} className={`keyword-item keyword-${index % 8}`}>
+                  <KeyRound size={12} /> {k} 
                 </div>
               ))}
             </div>

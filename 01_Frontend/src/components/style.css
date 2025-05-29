@@ -886,6 +886,19 @@ body {
   margin-left: 1px;
 }
 
+.toggle-button:hover {
+  background-color: #6daffc;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.toggle-button.active {
+  background-color: #1e40af;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(1px);
+}
+
+
 /* Grid view */
 .grid-view {
   display: grid;

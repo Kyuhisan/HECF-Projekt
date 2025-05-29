@@ -81,10 +81,16 @@ const MainContent = ({ filters, listings }: Props) => {
       <div className="content-wrapper">
         {/* Gumb za preklop med prikazom grid ali row */}
           <div className="view-toggle-buttons">
-            <button className="toggle-button" onClick={() => setViewMode("grid")} title="Grid view">
+            <button 
+              className={`toggle-button ${viewMode === "grid" ? "active" : ""}`} 
+              onClick={() => setViewMode("grid")} 
+              title="Grid view">
               <LayoutGrid />
             </button>
-            <button className="toggle-button" onClick={() => setViewMode("list")} title="List view">
+            <button 
+              className={`toggle-button ${viewMode === "list" ? "active" : ""}`} 
+              onClick={() => setViewMode("list")} 
+              title="List view">
               <Rows2 />
             </button>
           </div>

@@ -235,15 +235,47 @@ public class ec_europa_euProvider {
         return odt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
+//    private String cleanString(String raw) {
+//        if (raw == null || raw.isEmpty()) return "";
+//        return raw.replaceAll("(?is)<script.*?>.*?</script>", "")
+//                .replaceAll("(?is)<style.*?>.*?</style>", "")
+//                .replaceAll("<[^>]+>", "")
+//                .replaceAll("&nbsp;", " ")
+//                .replaceAll("&amp;", "&")
+//                .replaceAll("\\s+", " ").trim();
+//    }
+
     private String cleanString(String raw) {
         if (raw == null || raw.isEmpty()) return "";
-        return raw.replaceAll("(?is)<script.*?>.*?</script>", "")
+
+        // Step 1: Remove scripts, styles, and HTML tags
+        String cleaned = raw.replaceAll("(?is)<script.*?>.*?</script>", "")
                 .replaceAll("(?is)<style.*?>.*?</style>", "")
                 .replaceAll("<[^>]+>", "")
                 .replaceAll("&nbsp;", " ")
                 .replaceAll("&amp;", "&")
                 .replaceAll("\\s+", " ").trim();
+
+        // Step 2: Remove boilerplate labels and section headers
+        cleaned = cleaned.replaceAll("(?i)(expected outcome|scope|area \\w:|summary):", "");
+
+        // Step 3: Remove known structural or template-like phrases
+        cleaned = cleaned.replaceAll("(?i)(projects? (are|is) expected to|proposals? (should|are expected to)|this topic (is|will be|implements)).*?(\\.|;)", "");
+
+        // Step 4: Extract core content: keep only long, meaningful sentences
+        String[] sentences = cleaned.split("\\. ");
+        StringBuilder meaningful = new StringBuilder();
+        for (String sentence : sentences) {
+            String trimmed = sentence.trim();
+            if (trimmed.length() > 80 && !trimmed.matches("(?i).*\\b(section|area|topic|proposal|expected|scope|duration|criteria)\\b.*")) {
+                meaningful.append(trimmed).append(". ");
+            }
+        }
+
+        return meaningful.toString().trim();
     }
+
+
     public void saveIndustriesAndTechnologiesToFile(List<Listing> listings) throws IOException {
         Set<String> uniqueItems = new HashSet<>();
 

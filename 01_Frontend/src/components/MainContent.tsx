@@ -3,7 +3,7 @@ import "./style.css";
 import SmartSearch from "./SmartSearch";
 import type { Listing } from "../App";
 import { set } from "lodash";
-import { CalendarClock, HandCoins, CodeXml,  KeyRound,Lock } from "lucide-react";
+import { CalendarClock, HandCoins, CodeXml,  KeyRound, Lock, LayoutGrid, Rows2 } from "lucide-react";
 
 type Props = {
   filters: {
@@ -30,6 +30,7 @@ function formatEuro(budget: string | null): string {
 }
 
 const MainContent = ({ filters, listings }: Props) => {
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchKeywords, setSearchKeywords] = useState<string[]>([]);
@@ -78,6 +79,16 @@ const MainContent = ({ filters, listings }: Props) => {
   return (
     <div className="main-content right-shift">
       <div className="content-wrapper">
+        {/* Gumb za preklop med prikazom grid ali row */}
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem", gap: "12px" }}>
+            <button className="search-button" onClick={() => setViewMode("grid")} title="Grid view">
+              <LayoutGrid />
+            </button>
+            <button className="search-button" onClick={() => setViewMode("list")} title="List view">
+              <Rows2 />
+            </button>
+          </div>
+
         {/* Dodal SmartSearch komponento za api */}
         <SmartSearch
           value={searchTerm}
@@ -86,9 +97,10 @@ const MainContent = ({ filters, listings }: Props) => {
         ></SmartSearch>
         {/* Dodal SmartSearch komponento za api */}
 
-        <div className="results">
+        <div className={`results ${viewMode === "grid" ? "grid-view" : "list-view"}`}>
           {currentListings.map((listing) => (
             <div className="result-item" key={listing.id}>
+              
               {/* Header z naslovom in statusom/datumom */}
               <div className="card-header">
                 <h4 className="card-title">{listing.title}</h4>

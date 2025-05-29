@@ -10,5 +10,4 @@ public interface ListingRepository extends MongoRepository<Listing, String> {
     boolean existsBySourceIdentifier(String sourceIdentifier);
     List<Listing> findAllBySourceIdentifierIn(List<String> identifiers);
     List<Listing> findAllBySourceIdentifierIn(Set<String> sourceIdentifiers);
-
 }

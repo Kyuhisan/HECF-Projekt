@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
-@Document(collection = "testing")
+@Document(collection = "Listings-Filtered")
 @Data
 public class Listing {
     @Id

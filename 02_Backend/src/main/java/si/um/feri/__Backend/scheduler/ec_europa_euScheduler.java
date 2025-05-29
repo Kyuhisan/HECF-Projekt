@@ -29,10 +29,10 @@ public class ec_europa_euScheduler {
         listingService.fetchListings("queryOpen.json");
         fetchLogService.logFetch("ec_europa_eu", "Open");
     }
-//    @Scheduled(fixedDelayString = "${fetch.interval.closed}")
-//    public void fetchClosedListings() throws IOException  {
-//        System.out.println("Scheduled task: Fetching closed listings.");
-//        listingService.fetchListings("queryClosed.json");
-//        fetchLogService.logFetch("ec_europa_eu", "Closed");
-//    }
+    @Scheduled(fixedDelayString = "${fetch.interval.closed}")
+    public void fetchClosedListings() throws IOException  {
+        System.out.println("Scheduled task: Fetching closed listings.");
+        listingService.fetchListings("queryClosed.json");
+        fetchLogService.logFetch("ec_europa_eu", "Closed");
+    }
 }

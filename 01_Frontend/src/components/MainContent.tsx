@@ -38,34 +38,16 @@ const MainContent = ({ filters, listings }: Props) => {
 
   useEffect(() => {
     const results = listings.filter((listing) => {
-      const matchesIndustries =
-        filters.industries.length === 0 ||
-        (listing.industries !== null &&
-          filters.industries?.every((ind) =>
-            listing.industries?.includes(ind)
-          ));
-      const matchesStatus =
-        !filters.status ||
-        filters.status.length === 0 ||
-        filters.status.includes(listing.status);
-      const matchesSource =
-        filters.source.length === 0 || filters.source.includes(listing.source);
+      const matchesIndustries = filters.industries.length === 0 || (listing.industries !== null && filters.industries?.every((ind) => listing.industries?.includes(ind)));
+      const matchesStatus = !filters.status || filters.status.length === 0 || filters.status.includes(listing.status);
+      const matchesSource = filters.source.length === 0 || filters.source.includes(listing.source);
       const listingBudget = Number(listing.budget);
-      const matchesBudget =
-        isNaN(listingBudget) || listingBudget <= filters.budget;
-      const matchesDeadline =
-        !filters.deadLine || listing.deadlineDate === filters.deadLine;
-
+      const matchesBudget = isNaN(listingBudget) || listingBudget <= filters.budget;
+      const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
       const lowerDescription = listing.description?.toLowerCase() ?? "";
-      const lowerTechnologies = (listing.technologies ?? []).map((t) =>
-        t.toLowerCase()
-      );
-      const lowerIndustries = (listing.industries ?? []).map((i) =>
-        i.toLowerCase()
-      );
-      const keywordMatch =
-        searchKeywords.length === 0 ||
-        searchKeywords.some((k) => {
+      const lowerTechnologies = (listing.technologies ?? []).map((t) => t.toLowerCase());
+      const lowerIndustries = (listing.industries ?? []).map((i) => i.toLowerCase());
+      const keywordMatch = searchKeywords.length === 0 || searchKeywords.some((k) => {
           const kw = k.toLowerCase();
           return (
             lowerDescription.includes(" " + kw + " ") ||

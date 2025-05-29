@@ -41,35 +41,33 @@ body {
   margin-bottom: 2rem;
 }
 
+.dropdown-wrapper {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
 .dropdown-header {
   cursor: pointer;
   font-weight: bold;
   padding: 0.5rem;
-  border-radius: 5px;
-  background-color: #ffffff;
- border-radius: 12px;
- border: 1px solid #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-  outline: none;
+  background-color: transparent; /* Brez ozadja, ker ga zdaj dobi od wrapperja */
+  box-shadow: none; /* Odstranimo */
+  border-radius: 0;
 }
 
 .dropdown-header:hover {
-  background: #fdfdfd;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06), 0 12px 24px rgba(0, 0, 0, 0.08);
+  background: #f9f9f9;
+  box-shadow: none;
 }
 
 .dropdown-content {
- width: 100%;
-  background: white;
-  padding: 12px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin: 10px 0;
-  max-height: 400px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  border: 1px solid #e0e0e0;
+  padding: 24px;
+  background-color: transparent; /* Da se sklada z wrapperjem */
+  box-shadow: none; /* Odstranimo */
+  margin: 0; /* Odstranimo razmik */
 }
 
 .dropdown-content label {

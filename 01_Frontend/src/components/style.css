@@ -126,7 +126,7 @@ body {
   border: 1px solid #f0f0f0;
   border-radius: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-border: #d1d5db 1px solid;
+  border: #d1d5db 1px solid;
   transition: all 0.2s ease;
   outline: none;
   width: 52.5%;
@@ -858,6 +858,32 @@ border: #d1d5db 1px solid;
   padding: 2px 12px;
   border: 0.5px solid #ffcb20;
   font-size: 14px;
+}
+
+/* Ikone za preklop pogleda – skupaj */
+.view-toggle-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.toggle-button {
+  background-color: #3b77f7;
+  color: white;
+  font-weight: 500;
+  padding: 8px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  width: 30px;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+  margin-right: 1px;
+  margin-left: 1px;
 }
 
 /* Grid view */

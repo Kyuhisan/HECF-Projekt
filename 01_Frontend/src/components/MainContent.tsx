@@ -80,11 +80,11 @@ const MainContent = ({ filters, listings }: Props) => {
     <div className="main-content right-shift">
       <div className="content-wrapper">
         {/* Gumb za preklop med prikazom grid ali row */}
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem", gap: "12px" }}>
-            <button className="search-button" onClick={() => setViewMode("grid")} title="Grid view">
+          <div className="view-toggle-buttons">
+            <button className="toggle-button" onClick={() => setViewMode("grid")} title="Grid view">
               <LayoutGrid />
             </button>
-            <button className="search-button" onClick={() => setViewMode("list")} title="List view">
+            <button className="toggle-button" onClick={() => setViewMode("list")} title="List view">
               <Rows2 />
             </button>
           </div>

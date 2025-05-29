@@ -1,0 +1,4 @@
+logging:
+  level:
+    org.openqa.selenium.devtools.CdpVersionFinder: ERROR
+    org.openqa.selenium.chromium.ChromiumDriver: ERROR

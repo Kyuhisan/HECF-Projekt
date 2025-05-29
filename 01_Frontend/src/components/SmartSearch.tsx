@@ -90,7 +90,7 @@ const SmartSearch = ({
 
             <div className="container-keywords">
               {keywords.map((k,index) => (
-                <div key={k} className={`keyword-item keyword-${index % 8}`}>
+                <div key={k} className={`keyword-item keyword-${index % 13}`}>
                   <KeyRound size={12} /> {k} 
                 </div>
               ))}

@@ -3,7 +3,7 @@ import "./style.css";
 import SmartSearch from "./SmartSearch";
 import type { Listing } from "../App";
 import { set } from "lodash";
-import { CalendarClock, HandCoins, CodeXml,  KeyRound } from "lucide-react";
+import { CalendarClock, HandCoins, CodeXml,  KeyRound,Lock } from "lucide-react";
 
 type Props = {
   filters: {
@@ -127,8 +127,8 @@ const MainContent = ({ filters, listings }: Props) => {
                 <p className="card-summary">
                   <span className="summary-clamp">
                     {listing.summary
-                      ? listing.summary.length > 200
-                        ? listing.summary.substring(0, 200) + "..."
+                      ? listing.summary.length > 270
+                        ? listing.summary.substring(0, 270) + "..."
                         : listing.summary
                       : "No summary available."}
                   </span>
@@ -147,7 +147,7 @@ const MainContent = ({ filters, listings }: Props) => {
                               index % 3
                             }`}
                           >
-                            {industry} <KeyRound size={14} />
+                            <KeyRound size={14} /> {industry} 
                           </span>
                         ))}
                       </div>
@@ -162,7 +162,7 @@ const MainContent = ({ filters, listings }: Props) => {
                             key={index}
                             className={`tag-badge tech-tag tech-${index % 3}`}
                           >
-                            {tech} <KeyRound size={14} />
+                          <KeyRound size={14} /> {tech.length > 120 ? tech.substring(0, 120) + "..." : tech} 
                           </span>
                         ))}
                       </div>

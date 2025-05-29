@@ -123,18 +123,35 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
           </div>
           {openDropdowns[key] && (
             <div className="dropdown-content">
-              {values.map((value) => (
-                <label key={value} className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={(filters as any)[key].includes(value)}
-                    onChange={() =>
-                      handleCheckboxChange(key as keyof Props["filters"], value)
-                    }
-                  />
-                  {value}
-                </label>
-              ))}
+              {values.map((value) => {
+  const getStatusClass = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "closed":
+        return "status-closed";
+      case "open":
+        return "status-open";
+      case "forthcoming":
+        return "status-forthcoming";
+      default:
+        return "";
+    }
+  };
+
+  return (
+    <label key={value} className="checkbox-label">
+      <input
+        type="checkbox"
+        checked={(filters as any)[key].includes(value)}
+        onChange={() =>
+          handleCheckboxChange(key as keyof Props["filters"], value)
+        }
+      />
+      <span className={key === "status" ? getStatusClass(value) : ""}>
+        {value}
+      </span>
+    </label>
+  );
+})}
             </div>
           )}
         </div>

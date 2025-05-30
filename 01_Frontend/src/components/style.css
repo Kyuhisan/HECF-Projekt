@@ -68,9 +68,10 @@ body {
   background-color: transparent; 
   box-shadow: none;
   margin: 0; 
-  /* max-height: 250px;
+ max-height: 300px;
   overflow-y: auto;
-  scrollbar-width: thin; */
+  scrollbar-width: thin; 
+  overflow-x: hidden;
 }
 
 .dropdown-content label {

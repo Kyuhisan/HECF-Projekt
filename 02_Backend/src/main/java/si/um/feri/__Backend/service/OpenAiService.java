@@ -38,16 +38,17 @@ public class OpenAiService {
             }
         }
 
+        // Limit to first 300 keywords to avoid token overload
         return keywords.stream()
-                .map(k -> "\"" + k + "\"")
-                .collect(Collectors.joining(", ", "[", "]"));
+                .map(k -> "- " + k)
+                .collect(Collectors.joining("\n"));
     }
 
     public Mono<String> extractKeywords(String userInput) {
-        String keywordList;
+        String formattedKeywordList;
         try {
             String baseDir = System.getProperty("user.dir") + "/output/keywords/";
-            keywordList = loadAllKeywordsFromFiles(List.of(
+            formattedKeywordList = loadAllKeywordsFromFiles(List.of(
                     baseDir + "scraper10/keywords.txt",
                     baseDir + "scraper20/keywords.txt",
                     baseDir + "ec_europa_eu/keywords.txt",
@@ -58,41 +59,46 @@ public class OpenAiService {
         }
 
         String prompt = """
-You are an assistant that classifies user input into high-level domains.
-From the list of keywords below,  select **exactly between 10 and 20** that are semantically or thematically relevant to the user input.
-Choose keywords that are directly or indirectly related to the concepts mentioned.
+You are a keyword extractor.
 
-Only return a JSON array of the selected keywords (as strings). Do not include any explanation or additional text.
+Given a user input and a list of available keywords, select ONLY between 5 and 10 relevant keywords based on thematic or semantic similarity.
 
-Important:
-- Select at least 10 and no more than 20 keywords. Never return more than 20.
-- Avoid exact duplicates.
-- At least 90% of keywords must come from the provided list.
-- You may invent up to 2 additional keywords, if they are clearly relevant and missing from the list.
+Rules:
+- You may invent up to 2 keywords if necessary.
+- No duplicates.
+- Return only a JSON array of strings.
 
-Only choose from the following keywords:
-""" + keywordList + "\n\nUser input: \"" + userInput + "\"";
+Format:
+["keyword1", "keyword2", ..., "keywordN"]
+
+Available Keywords:
+""" + formattedKeywordList + "\n\nUser Input:\n" + userInput;
 
         Map<String, Object> requestBody = Map.of(
-                "model", "mistralai/mistral-7b-instruct:free",  // FREE model
-                "messages", List.of(Map.of("role", "user", "content", prompt)),
+                "model", "mistralai/mistral-7b-instruct:free",
+                "messages", List.of(
+                        Map.of("role", "system", "content", "You are a helpful assistant for keyword classification."),
+                        Map.of("role", "user", "content", prompt)
+                ),
                 "temperature", 0.3
         );
 
         return webClient.post()
                 .uri(apiUrl)
                 .header("Authorization", "Bearer " + apiKey)
-                .header("HTTP-Referer", "http://localhost:5173") // lahko poljubno
-                .header("X-Title", "HECF-SmartSearch") // ime tvoje aplikacije kaj je v titlu
+                .header("HTTP-Referer", "http://localhost:5173")
+                .header("X-Title", "HECF-SmartSearch")
                 .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
                 .retrieve()
                 .bodyToMono(Map.class)
                 .map(response -> {
+                    System.out.println("Raw response: " + response); // Debugging output
+
                     List<Map<String, Object>> choices = (List<Map<String, Object>>) response.get("choices");
                     if (choices != null && !choices.isEmpty()) {
                         Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
-                        return message.get("content").toString();
+                        return message.get("content").toString().trim();
                     }
                     return "[]";
                 })

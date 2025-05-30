@@ -179,7 +179,14 @@ public class ec_europa_euProvider {
             listing.setDescription(description);
             listing.setKeywords(m.getTags());
             listing.setIndustries(m.getCrossCuttingPriorities());
-            listing.setTechnologies(m.getTypesOfAction());
+
+            //  REMOVE "HORIZON - " prefix from technologies
+            Optional.ofNullable(m.getTypesOfAction())
+                .ifPresent(list -> listing.setTechnologies(
+                        list.stream()
+                                .map(s -> s.replace("HORIZON", "").trim())
+                                .toList()
+                ));
 
             String budget = first(m.getBudget());
             if (budget != null && !budget.isBlank()) {
@@ -234,16 +241,6 @@ public class ec_europa_euProvider {
         OffsetDateTime odt = OffsetDateTime.parse(inputDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
         return odt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
-
-//    private String cleanString(String raw) {
-//        if (raw == null || raw.isEmpty()) return "";
-//        return raw.replaceAll("(?is)<script.*?>.*?</script>", "")
-//                .replaceAll("(?is)<style.*?>.*?</style>", "")
-//                .replaceAll("<[^>]+>", "")
-//                .replaceAll("&nbsp;", " ")
-//                .replaceAll("&amp;", "&")
-//                .replaceAll("\\s+", " ").trim();
-//    }
 
     private String cleanString(String raw) {
         if (raw == null || raw.isEmpty()) return "";

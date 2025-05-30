@@ -3,7 +3,7 @@ import "./style.css";
 import SmartSearch from "./SmartSearch";
 import type { Listing } from "../App";
 import { set } from "lodash";
-import { CalendarClock, HandCoins, CodeXml,  KeyRound,Lock } from "lucide-react";
+import { CalendarClock, HandCoins, CodeXml,  KeyRound, Lock, LayoutGrid, Rows2 } from "lucide-react";
 
 type Props = {
   filters: {
@@ -30,6 +30,7 @@ function formatEuro(budget: string | null): string {
 }
 
 const MainContent = ({ filters, listings }: Props) => {
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchKeywords, setSearchKeywords] = useState<string[]>([]);
@@ -38,34 +39,16 @@ const MainContent = ({ filters, listings }: Props) => {
 
   useEffect(() => {
     const results = listings.filter((listing) => {
-      const matchesIndustries =
-        filters.industries.length === 0 ||
-        (listing.industries !== null &&
-          filters.industries?.every((ind) =>
-            listing.industries?.includes(ind)
-          ));
-      const matchesStatus =
-        !filters.status ||
-        filters.status.length === 0 ||
-        filters.status.includes(listing.status);
-      const matchesSource =
-        filters.source.length === 0 || filters.source.includes(listing.source);
+      const matchesIndustries = filters.industries.length === 0 || (listing.industries !== null && filters.industries?.every((ind) => listing.industries?.includes(ind)));
+      const matchesStatus = !filters.status || filters.status.length === 0 || filters.status.includes(listing.status);
+      const matchesSource = filters.source.length === 0 || filters.source.includes(listing.source);
       const listingBudget = Number(listing.budget);
-      const matchesBudget =
-        isNaN(listingBudget) || listingBudget <= filters.budget;
-      const matchesDeadline =
-        !filters.deadLine || listing.deadlineDate === filters.deadLine;
-
+      const matchesBudget = isNaN(listingBudget) || listingBudget <= filters.budget;
+      const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
       const lowerDescription = listing.description?.toLowerCase() ?? "";
-      const lowerTechnologies = (listing.technologies ?? []).map((t) =>
-        t.toLowerCase()
-      );
-      const lowerIndustries = (listing.industries ?? []).map((i) =>
-        i.toLowerCase()
-      );
-      const keywordMatch =
-        searchKeywords.length === 0 ||
-        searchKeywords.some((k) => {
+      const lowerTechnologies = (listing.technologies ?? []).map((t) => t.toLowerCase());
+      const lowerIndustries = (listing.industries ?? []).map((i) => i.toLowerCase());
+      const keywordMatch = searchKeywords.length === 0 || searchKeywords.some((k) => {
           const kw = k.toLowerCase();
           return (
             lowerDescription.includes(" " + kw + " ") ||
@@ -86,6 +69,10 @@ const MainContent = ({ filters, listings }: Props) => {
     setFilteredListings(results);
   }, [listings, filters, searchKeywords]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentListings = filteredListings.slice(
@@ -96,6 +83,22 @@ const MainContent = ({ filters, listings }: Props) => {
   return (
     <div className="main-content right-shift">
       <div className="content-wrapper">
+        {/* Gumb za preklop med prikazom grid ali row */}
+          <div className="view-toggle-buttons">
+            <button 
+              className={`toggle-button ${viewMode === "grid" ? "active" : ""}`} 
+              onClick={() => setViewMode("grid")} 
+              title="Grid view">
+              <LayoutGrid />
+            </button>
+            <button 
+              className={`toggle-button ${viewMode === "list" ? "active" : ""}`} 
+              onClick={() => setViewMode("list")} 
+              title="List view">
+              <Rows2 />
+            </button>
+          </div>
+
         {/* Dodal SmartSearch komponento za api */}
         <SmartSearch
           value={searchTerm}
@@ -104,9 +107,10 @@ const MainContent = ({ filters, listings }: Props) => {
         ></SmartSearch>
         {/* Dodal SmartSearch komponento za api */}
 
-        <div className="results">
+        <div className={`results ${viewMode === "grid" ? "grid-view" : "list-view"}`}>
           {currentListings.map((listing) => (
             <div className="result-item" key={listing.id}>
+              
               {/* Header z naslovom in statusom/datumom */}
               <div className="card-header">
                 <h4 className="card-title">{listing.title}</h4>

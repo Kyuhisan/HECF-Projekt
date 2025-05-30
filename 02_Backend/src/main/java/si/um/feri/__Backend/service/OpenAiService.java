@@ -51,8 +51,7 @@ public class OpenAiService {
             formattedKeywordList = loadAllKeywordsFromFiles(List.of(
                     baseDir + "scraper10/keywords.txt",
                     baseDir + "scraper20/keywords.txt",
-                    baseDir + "ec_europa_eu/keywords.txt",
-                    baseDir + "generic/keywords.txt"
+                    baseDir + "ec_europa_eu/keywords.txt"
             ));
         } catch (IOException e) {
             return Mono.error(new RuntimeException("Failed to load keywords from files", e));

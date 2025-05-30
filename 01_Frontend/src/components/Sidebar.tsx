@@ -9,6 +9,10 @@ import {
   Factory,
    Eye
 } from "lucide-react";
+import { filter } from "lodash";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 type Props = {
   filters: {
@@ -78,84 +82,90 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
           <SlidersHorizontal /> Filters
         </h2>
       </div>
+
       {/* Industries dinamicni filter */}
       <div className="filter-group" key="industries">
-        <div className="dropdown-header" onClick={() => toggle("industries")}>
-          <Factory className="filter-icon" size={16} /> Industries{" "}
-        </div>
-
-        {openDropdowns["industries"] && (
-          <div className="dropdown-content">
-            <input
-              type="text"
-              placeholder="Search industries..."
-              className="industry-dropdown-search"
-              value={industrySearchTerm}
-              onChange={(e) => setIndustrySearchTerm(e.target.value)}
-            />
-            {filteredIndustries.map((industry) => (
-              <label key={industry}>
-                <input
-                  type="checkbox"
-                  checked={filters.industries.includes(industry)}
-                  onChange={() => handleCheckboxChange("industries", industry)}
-                />
-                {industry}
-              </label>
-            ))}
+        <div className="dropdown-wrapper">
+          <div className="dropdown-header" onClick={() => toggle("industries")}>
+            <Factory className="filter-icon" size={16} /> Industries{" "}
           </div>
-        )}
+
+          {openDropdowns["industries"] && (
+            <div className="dropdown-content">
+              <input
+                type="text"
+                placeholder="Search industries..."
+                className="industry-dropdown-search"
+                value={industrySearchTerm}
+                onChange={(e) => setIndustrySearchTerm(e.target.value)}
+              />
+              {filteredIndustries.map((industry) => (
+                <label key={industry}>
+                  <input
+                    type="checkbox"
+                    checked={filters.industries.includes(industry)}
+                    onChange={() => handleCheckboxChange("industries", industry)}
+                  />
+                  {industry}
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {Object.entries(filterOption).map(([key, values]) => (
         <div className="filter-group" key={key}>
-          <div className="dropdown-header" onClick={() => toggle(key)}>
-            {key === "status" && (
-              <>
-                <Eye size={16} className="filter-icon" /> Status
-              </>
-            )}
-            {key === "source" && (
-              <>
-                <CodeXml className="filter-icon" size={16} />  Source
-              </>
+          <div className="dropdown-wrapper">
+            <div className="dropdown-header" onClick={() => toggle(key)}>
+              {key === "status" && (
+                <>
+                  <Eye size={16} className="filter-icon" /> Status
+                </>
+              )}
+              {key === "source" && (
+                <>
+                  <CodeXml className="filter-icon" size={16} />  Source
+                </>
+              )}
+            </div>
+
+            {openDropdowns[key] && (
+              <div className="dropdown-content">
+                {values.map((value) => {
+                  const getStatusClass = (status: string) => {
+                    switch (status.toLowerCase()) {
+                      case "closed":
+                        return "status-closed";
+                      case "open":
+                        return "status-open";
+                      case "forthcoming":
+                        return "status-forthcoming";
+                      default:
+                        return "";
+                    }
+                  };
+
+                  return (
+                    <label key={value} className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={(filters as any)[key].includes(value)}
+                        onChange={() =>
+                          handleCheckboxChange(key as keyof Props["filters"], value)
+                        }
+                      />
+                      <span className={key === "status" ? getStatusClass(value) : ""}>
+                        {value}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
             )}
           </div>
-          {openDropdowns[key] && (
-            <div className="dropdown-content">
-              {values.map((value) => {
-  const getStatusClass = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "closed":
-        return "status-closed";
-      case "open":
-        return "status-open";
-      case "forthcoming":
-        return "status-forthcoming";
-      default:
-        return "";
-    }
-  };
-
-  return (
-    <label key={value} className="checkbox-label">
-      <input
-        type="checkbox"
-        checked={(filters as any)[key].includes(value)}
-        onChange={() =>
-          handleCheckboxChange(key as keyof Props["filters"], value)
-        }
-      />
-      <span className={key === "status" ? getStatusClass(value) : ""}>
-        {value}
-      </span>
-    </label>
-  );
-})}
-            </div>
-          )}
         </div>
-      ))}
+        ))}
 
       {/* Budget slider */}
       <div className="filter-group">
@@ -222,12 +232,25 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
             <CalendarClock size={20}/> <b>Deadline</b>
           </label>
           <br />
-          <input
-            type="date"
+          <DatePicker
+            selected={
+              filters.deadLine
+                ? new Date(filters.deadLine.split("/").reverse().join("-"))
+                : null
+            }
+            onChange={(date: Date | null) => {
+              if (date) {
+                const formatted = `${date.getDate().toString().padStart(2, '0')}/${(
+                  date.getMonth() + 1
+                ).toString().padStart(2, '0')}/${date.getFullYear()}`;
+                onFilterChange({ ...filters, deadLine: formatted });
+              }
+            }}
+            dateFormat="dd/MM/yyyy"
+            placeholderText="dd/mm/yyyy"
             className="slider-title"
-            value={filters.deadLine || ""}
-            onChange={handleDateChange}
           />
+
         </div>
       </div>
 

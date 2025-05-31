@@ -52,8 +52,8 @@ const MainContent = ({ filters, listings }: Props) => {
           const kw = k.toLowerCase();
           return (
             lowerDescription.includes(" " + kw + " ") ||
-            lowerTechnologies.includes(" " + kw + " ") ||
-            lowerIndustries.includes(" " + kw + " ")
+            lowerTechnologies.includes(" " + kw + " ") || lowerTechnologies.includes(kw) ||
+            lowerIndustries.includes(" " + kw + " ")|| lowerIndustries.includes(kw) 
           );
         });
 

@@ -51,6 +51,7 @@ public class OpenAiService {
             formattedKeywordList = loadAllKeywordsFromFiles(List.of(
                     baseDir + "scraper10/keywords.txt",
                     baseDir + "scraper20/keywords.txt",
+                    baseDir + "generic/keywords.txt",
                     baseDir + "ec_europa_eu/keywords.txt"
             ));
         } catch (IOException e) {
@@ -63,7 +64,7 @@ You are a keyword extractor.
 Given a user input and a list of available keywords, select ONLY between 5 and 10 relevant keywords based on thematic or semantic similarity.
 
 Rules:
-- You may invent up to 2 keywords if necessary.
+- You may invent up to 2 keywords if necessary and they must be in english language.
 - No duplicates.
 - Return only a JSON array of strings.
 

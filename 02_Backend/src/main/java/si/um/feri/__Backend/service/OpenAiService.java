@@ -64,8 +64,9 @@ You are a keyword extractor.
 Given a user input and a list of available keywords, select ONLY between 5 and 10 relevant keywords based on thematic or semantic similarity.
 
 Rules:
-- You may invent up to 2 keywords if necessary and they must be in english language.
+- You may invent up to 2 keywords if necessary.
 - No duplicates.
+- All keywords must be in english language!
 - Return only a JSON array of strings.
 
 Format:

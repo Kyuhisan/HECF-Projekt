@@ -15,12 +15,16 @@ type SmartSearchProps = {
   value: string;
   onChange: (value: string) => void;
   onKeywordsChange?: (keywords: string[]) => void;
+  onAllKeywordsChange?: (keywords: string[]) => void;
+  onInteraction?: () => void;
 };
 
 const SmartSearch = ({
   value,
   onChange,
   onKeywordsChange,
+   onAllKeywordsChange,
+    onInteraction,
 }: SmartSearchProps) => {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -28,6 +32,7 @@ const SmartSearch = ({
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
 
   const toggleKeywordSelection = (keyword: string) => {
+    onInteraction?.();
     setSelectedKeywords((prev) =>
       prev.includes(keyword)
         ? prev.filter((k) => k !== keyword)
@@ -49,10 +54,12 @@ const SmartSearch = ({
   const handleExtract = useCallback(
     debounce(
       async (val: string) => {
+        onInteraction?.();
         setLoading(true);
         const extracted = await extractKeywords(val);
-        setKeywords(extracted);
-        onKeywordsChange?.(extracted);
+         setKeywords(extracted);             
+         setSelectedKeywords([]);            
+         onAllKeywordsChange?.(extracted);
         setLoading(false);
       },
       800,
@@ -63,8 +70,10 @@ const SmartSearch = ({
 
   const handleClear = () => {
     setKeywords([]);
+    setSelectedKeywords([]);
     onKeywordsChange?.([]);
     onChange?.("");
+    onInteraction?.();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -80,6 +89,9 @@ const SmartSearch = ({
       }
     }
   };
+  useEffect(() => {
+    onKeywordsChange?.(selectedKeywords);
+  }, [selectedKeywords]);
 
   return (
     <>

@@ -3,7 +3,7 @@ import "./style.css";
 import SmartSearch from "./SmartSearch";
 import type { Listing } from "../App";
 import { set } from "lodash";
-import { CalendarClock, HandCoins, CodeXml,  KeyRound, Lock, LayoutGrid, Rows2 } from "lucide-react";
+import { CalendarClock, HandCoins, CodeXml,  KeyRound, Lock, LayoutGrid, Rows2,SearchX,Hourglass } from "lucide-react";
 
 type Props = {
   filters: {
@@ -35,9 +35,18 @@ const MainContent = ({ filters, listings }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchKeywords, setSearchKeywords] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [allKeywords, setAllKeywords] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 15;
+  const resetPage = () => setCurrentPage(1);
 
   useEffect(() => {
+      if (listings.length === 0) {
+    setIsLoading(true);
+    setFilteredListings([]);
+    return;
+  }
+  setIsLoading(false);
     const results = listings.filter((listing) => {
       const matchesIndustries = filters.industries.length === 0 || (listing.industries !== null && filters.industries?.every((ind) => listing.industries?.includes(ind)));
       const matchesStatus = !filters.status || filters.status.length === 0 || filters.status.includes(listing.status);
@@ -45,17 +54,22 @@ const MainContent = ({ filters, listings }: Props) => {
       const listingBudget = Number(listing.budget);
       const matchesBudget = isNaN(listingBudget) || listingBudget <= filters.budget;
       const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
+
       const lowerDescription = listing.description?.toLowerCase() ?? "";
       const lowerTechnologies = (listing.technologies ?? []).map((t) => t.toLowerCase());
       const lowerIndustries = (listing.industries ?? []).map((i) => i.toLowerCase());
-      const keywordMatch = searchKeywords.length === 0 || searchKeywords.some((k) => {
-          const kw = k.toLowerCase();
-          return (
-            lowerDescription.includes(" " + kw + " ") ||
-            lowerTechnologies.includes(" " + kw + " ") || lowerTechnologies.includes(kw) ||
-            lowerIndustries.includes(" " + kw + " ")|| lowerIndustries.includes(kw) 
-          );
-        });
+      const activeKeywords = searchKeywords.length > 0 ? searchKeywords : allKeywords;
+
+      const keywordMatch = activeKeywords.length === 0 || activeKeywords.some((k) => {
+  const kw = k.toLowerCase();
+  return (
+    lowerDescription.includes(" " + kw + " ") ||
+    lowerTechnologies.includes(" " + kw + " ") ||
+    lowerIndustries.includes(" " + kw + " ") ||
+    lowerTechnologies.includes(kw) ||
+    lowerIndustries.includes(kw)
+  );
+});
 
       return (
         matchesIndustries &&
@@ -67,7 +81,7 @@ const MainContent = ({ filters, listings }: Props) => {
       );
     });
     setFilteredListings(results);
-  }, [listings, filters, searchKeywords]);
+  }, [listings, filters, searchKeywords, allKeywords]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -104,10 +118,13 @@ const MainContent = ({ filters, listings }: Props) => {
           value={searchTerm}
           onChange={setSearchTerm}
           onKeywordsChange={setSearchKeywords}
+          onAllKeywordsChange={setAllKeywords}
+           onInteraction={resetPage}
         ></SmartSearch>
         {/* Dodal SmartSearch komponento za api */}
 
         <div className={`results ${viewMode === "grid" ? "grid-view" : "list-view"}`}>
+          
           {currentListings.map((listing) => (
             <div className="result-item" key={listing.id}>
               
@@ -200,8 +217,25 @@ const MainContent = ({ filters, listings }: Props) => {
             </div>
           ))}
 
-          {listings.length === 0 && <p className="spinner"></p>}
+          
         </div>
+       
+        {isLoading ? (
+          
+  <div className="no-results">
+    <div className="loading-dots">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <p>Loading listings...</p>
+</div>
+) : currentListings.length === 0 ? (
+  <div className="no-results">
+    <SearchX size={24} />
+    <p>No listings found matching your criteria.</p>
+  </div>
+) : null}
 
         {/*Gumb za paging --> max 15*/}
         {filteredListings.length > itemsPerPage && (

@@ -207,6 +207,64 @@ body {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
+
+.no-results {
+  background: white;
+  border: 2px dashed #e0e0e0;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0.4rem auto;
+  padding: 5.5rem 4rem;
+  text-align: center;
+  width: 86%;
+  max-width: 1800px;
+}
+
+.no-results svg {
+  color: #64748b;
+  margin-bottom: 1rem;
+}
+
+.no-results p {
+  color: #64748b;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  background-color: #64748b;
+  border-radius: 50%;
+  animation: bounce 1.4s ease-in-out infinite both;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+.loading-dots span:nth-child(3) { animation-delay: 0s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { 
+    transform: scale(0);
+  } 
+  40% { 
+    transform: scale(1);
+  }
+}
+
+
 /* Header */
 .card-header {
   display: flex;
@@ -710,7 +768,7 @@ body {
 .keyword-item.keyword-6 {
   background: #fff8e1;
   color: #f57f17;
-  border-color: #f8df00;
+  border-color: #f8e800;
 }
 
 .keyword-item.keyword-6:hover {
@@ -722,6 +780,7 @@ body {
   background: #fff9c4;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(255, 235, 59, 0.3);
+   border-color: #f8d300;
 }
 
 .keyword-item.keyword-7 {
@@ -828,11 +887,6 @@ body {
   box-shadow: 0 4px 8px rgba(205, 220, 57, 0.3);
 }
 
-.keyword-item.selected:hover {
-  transform: translateY(-2px);
-   transform: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* naj ostane kot selected */
-}
 
 .clear-button {
   background-color: #3b77f7;

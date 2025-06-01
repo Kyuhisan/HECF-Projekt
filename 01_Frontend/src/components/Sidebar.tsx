@@ -193,7 +193,7 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
               type="range"
               min={0}
               max={100000000}
-              step={1000000}
+              step={10000}
               value={filters.budget || 0}
               onChange={(e) =>
                 onFilterChange({ ...filters, budget: Number(e.target.value) })

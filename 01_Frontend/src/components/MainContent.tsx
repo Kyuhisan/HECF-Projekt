@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import "./style.css";
 import SmartSearch from "./SmartSearch";
 import type { Listing } from "../App";
-import { set } from "lodash";
-import { CalendarClock, HandCoins, CodeXml,  KeyRound, Lock, LayoutGrid, Rows2,SearchX,Hourglass } from "lucide-react";
+import { CalendarClock, HandCoins, CodeXml,  KeyRound, Lock, LayoutGrid, Rows2 } from "lucide-react";
 
 type Props = {
   filters: {
@@ -58,18 +57,14 @@ const MainContent = ({ filters, listings }: Props) => {
       const lowerDescription = listing.description?.toLowerCase() ?? "";
       const lowerTechnologies = (listing.technologies ?? []).map((t) => t.toLowerCase());
       const lowerIndustries = (listing.industries ?? []).map((i) => i.toLowerCase());
-      const activeKeywords = searchKeywords.length > 0 ? searchKeywords : allKeywords;
-
-      const keywordMatch = activeKeywords.length === 0 || activeKeywords.some((k) => {
-  const kw = k.toLowerCase();
-  return (
-    lowerDescription.includes(" " + kw + " ") ||
-    lowerTechnologies.includes(" " + kw + " ") ||
-    lowerIndustries.includes(" " + kw + " ") ||
-    lowerTechnologies.includes(kw) ||
-    lowerIndustries.includes(kw)
-  );
-});
+      const keywordMatch = searchKeywords.length === 0 || searchKeywords.some((k) => {
+        const kw = k.toLowerCase();
+          return (
+            lowerDescription.includes(" " + kw + " ") ||
+            lowerTechnologies.includes(" " + kw + " ") ||
+            lowerIndustries.includes(" " + kw + " ")
+          );
+        });
 
       return (
         matchesIndustries &&

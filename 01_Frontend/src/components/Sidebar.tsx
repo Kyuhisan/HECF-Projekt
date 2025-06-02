@@ -28,7 +28,6 @@ type Props = {
 
 const filterOption = {
   status: ["Forthcoming", "Open", "Closed"],
-  source: ["ec.europa.eu", "getonepass.eu", "cascadefunding.eu"],
 };
 
 const Sidebar = ({ filters, onFilterChange, industries }: Props) => {

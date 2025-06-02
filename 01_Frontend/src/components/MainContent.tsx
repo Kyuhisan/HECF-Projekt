@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./style.css";
 import SmartSearch from "./SmartSearch";
 import type { Listing } from "../App";
-import { CalendarClock, HandCoins, CodeXml,  KeyRound, Lock, LayoutGrid, Rows2 } from "lucide-react";
+import { CalendarClock, HandCoins, CodeXml,  KeyRound, Lock, LayoutGrid, Rows2, SearchX } from "lucide-react";
 
 type Props = {
   filters: {
@@ -119,7 +119,6 @@ const MainContent = ({ filters, listings }: Props) => {
         {/* Dodal SmartSearch komponento za api */}
 
         <div className={`results ${viewMode === "grid" ? "grid-view" : "list-view"}`}>
-          
           {currentListings.map((listing) => (
             <div className="result-item" key={listing.id}>
               
@@ -211,26 +210,23 @@ const MainContent = ({ filters, listings }: Props) => {
               </div>
             </div>
           ))}
-
-          
         </div>
        
         {isLoading ? (
-          
-  <div className="no-results">
-    <div className="loading-dots">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-  <p>Loading listings...</p>
-</div>
-) : currentListings.length === 0 ? (
-  <div className="no-results">
-    <SearchX size={24} />
-    <p>No listings found matching your criteria.</p>
-  </div>
-) : null}
+          <div className="no-results">
+            <div className="loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <p>Loading listings...</p>
+          </div>
+            ) : currentListings.length === 0 ? (
+          <div className="no-results">
+            <SearchX size={24} />
+            <p>No listings found matching your criteria.</p>
+          </div>
+        ) : null}
 
         {/*Gumb za paging --> max 15*/}
         {filteredListings.length > itemsPerPage && (

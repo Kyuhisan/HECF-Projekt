@@ -83,7 +83,7 @@ public class ec_europa_euProvider {
         String outputPath = System.getProperty("user.dir") + "/output/rawData/ec_europa_eu/" + suffix;
 
         saveRawLocally(allPages, outputPath);
-        saveRawToMongo(allPages, "ec.europa.eu:" + queryFileName.replace("query", "").replace(".json", ""));
+        //saveRawToMongo(allPages, "ec.europa.eu:" + queryFileName.replace("query", "").replace(".json", ""));
         saveFilteredToMongo(allResults);
         generateKeywordsFromMongo();
 
@@ -103,27 +103,27 @@ public class ec_europa_euProvider {
         log.info("Saved raw data to: {}", filePath);
     }
 
-    public void saveRawToMongo(List<String> jsonPages, String provider) throws IOException {
-        mongoTemplate.getCollection("Listings-Raw(ec.europa.eu)").deleteMany(new Document("sourceProvider", provider));
-
-        List<Document> documents = new ArrayList<>();
-
-        for (String pageJson : jsonPages) {
-            JsonNode results = MAPPER.readTree(pageJson).path("results");
-            if (!results.isArray()) continue;
-            for (JsonNode resultNode : results) {
-                Document bsonDoc = Document.parse(resultNode.toString());
-                bsonDoc.put("sourceProvider", provider);
-                documents.add(bsonDoc);
-            }
-        }
-
-        if (!documents.isEmpty()) {
-            mongoTemplate.getCollection("Listings-Raw(ec.europa.eu)").insertMany(documents);
-        }
-
-        log.info("Inserted {} raw documents into MongoDB for provider: {}", documents.size(), provider);
-    }
+//    public void saveRawToMongo(List<String> jsonPages, String provider) throws IOException {
+//        mongoTemplate.getCollection("Listings-Raw(ec.europa.eu)").deleteMany(new Document("sourceProvider", provider));
+//
+//        List<Document> documents = new ArrayList<>();
+//
+//        for (String pageJson : jsonPages) {
+//            JsonNode results = MAPPER.readTree(pageJson).path("results");
+//            if (!results.isArray()) continue;
+//            for (JsonNode resultNode : results) {
+//                Document bsonDoc = Document.parse(resultNode.toString());
+//                bsonDoc.put("sourceProvider", provider);
+//                documents.add(bsonDoc);
+//            }
+//        }
+//
+//        if (!documents.isEmpty()) {
+//            mongoTemplate.getCollection("Listings-Raw(ec.europa.eu)").insertMany(documents);
+//        }
+//
+//        log.info("Inserted {} raw documents into MongoDB for provider: {}", documents.size(), provider);
+//    }
 
     private void saveFilteredToMongo(List<JsonNode> items) throws IOException {
         List<Listing> listingsToSave = new ArrayList<>();

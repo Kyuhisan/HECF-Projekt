@@ -23,7 +23,7 @@ function App() {
     status: [] as string[],
     source: [] as string[],
     industries: [] as string[],
-    budget: 100000000,
+    budget: { min: 0, max: 100000000 },
     deadLine: "",
   });
 

@@ -12,6 +12,8 @@ import {
 import { filter } from "lodash";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Slider, RangeSlider } from 'rsuite';
+import 'rsuite/dist/rsuite-no-reset.min.css'; 
 
 
 type Props = {
@@ -19,7 +21,7 @@ type Props = {
     industries: string[];
     status: string[];
     source: string[];
-    budget: number;
+    budget: {min: number; max: number};
     deadLine: string;
   };
   onFilterChange: (filters: Props["filters"]) => void;
@@ -73,6 +75,9 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
   const filteredIndustries = sortedIndustries.filter((industry) =>
     industry.toLowerCase().includes(industrySearchTerm.toLowerCase())
   );
+
+  const handleBudgetChange = (values: number[]) => {
+    onFilterChange({ ...filters, budget: { min: values[0], max: values[1] } }) };
 
   return (
     <aside className="sidebar">
@@ -177,27 +182,13 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
           </div>
 
           <div className="slider-wrapper">
-            <div className="slider-track">
-              <div
-                className="slider-fill"
-                style={{ width: `${(filters.budget / 100000000) * 100}%` }}
-              ></div>
-              <div
-                className="slider-thumb"
-                style={{ left: `${(filters.budget / 100000000) * 100}%` }}
-              ></div>
-            </div>
-
-            <input
-              type="range"
+            <RangeSlider
               min={0}
               max={100000000}
               step={10000}
-              value={filters.budget || 0}
-              onChange={(e) =>
-                onFilterChange({ ...filters, budget: Number(e.target.value) })
-              }
-              className="hidden-slider"
+              value={[filters.budget.min, filters.budget.max]}
+              onChange={handleBudgetChange}
+              className="budget-slider"
             />
 
             <div className="slider-ticks">
@@ -217,7 +208,7 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
             </div>
 
             <div className="budget-display">
-              {filters.budget.toLocaleString()}€
+              {filters.budget.min.toLocaleString()}€ <br/> - <br/> {filters.budget.max.toLocaleString()}€
             </div>
           </div>
         </div>
@@ -261,7 +252,7 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
             industries: [],
             status: [],
             source: [],
-            budget: 100000000,
+            budget: { min: 0, max: 100000000 },
             deadLine: "",
           })
         }

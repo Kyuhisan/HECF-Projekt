@@ -9,7 +9,7 @@ type Props = {
     industries: string[];
     status: string[];
     source: string[];
-    budget: number;
+    budget: {min: number; max: number};
     deadLine: string;
   };
   listings: Listing[];
@@ -51,7 +51,7 @@ const MainContent = ({ filters, listings }: Props) => {
       const matchesStatus = !filters.status || filters.status.length === 0 || filters.status.includes(listing.status);
       const matchesSource = filters.source.length === 0 || filters.source.includes(listing.source);
       const listingBudget = Number(listing.budget);
-      const matchesBudget = isNaN(listingBudget) || listingBudget <= filters.budget;
+      const matchesBudget = isNaN(listingBudget) || (listingBudget >= filters.budget.min && listingBudget <= filters.budget.max);
       const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
 
       const lowerDescription = listing.description?.toLowerCase() ?? "";

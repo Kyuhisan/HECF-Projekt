@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./style.css";
 import SmartSearch from "./SmartSearch";
 import type { Listing } from "../App";
-import { CalendarClock, HandCoins, CodeXml,  KeyRound, Lock, LayoutGrid, Rows2, SearchX } from "lucide-react";
+import { CalendarClock, HandCoins, CodeXml,  KeyRound, LayoutGrid, Rows2, SearchX } from "lucide-react";
 
 type Props = {
   filters: {

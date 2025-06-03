@@ -4,15 +4,13 @@ import {
   CalendarClock,
   HandCoins,
   CodeXml,
-  KeyRound,
   SlidersHorizontal,
   Factory,
    Eye
 } from "lucide-react";
-import { filter } from "lodash";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Slider, RangeSlider } from 'rsuite';
+import { RangeSlider } from 'rsuite';
 import 'rsuite/dist/rsuite-no-reset.min.css'; 
 
 
@@ -57,13 +55,6 @@ const Sidebar = ({ filters, onFilterChange, industries }: Props) => {
       : [...groupValues, value];
 
     onFilterChange({ ...filters, [group]: updateValues });
-  };
-
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isoDate = event.target.value;
-    const [year, month, day] = isoDate.split("-");
-    const formatted = `${day}/${month}/${year}`;
-    onFilterChange({ ...filters, deadLine: formatted });
   };
 
   // Razpored industrij po abecedi

@@ -13,13 +13,13 @@ import java.util.Map;
 @RequestMapping("/api/listings/scraper10")
 @CrossOrigin(origins = "http://localhost:5173")
 public class scraper10Controller {
-  private final scraper10Provider scraper10Provider;
-  public scraper10Controller(scraper10Provider scraper10) {
-    this.scraper10Provider = scraper10;
-  }
-
-  @GetMapping("/scrape/all")
-  public List<Map<String, Object>> getInfo10() throws IOException {
-      return scraper10Provider.scrapeData();
-  }
+//  private final scraper10Provider scraper10Provider;
+//  public scraper10Controller(scraper10Provider scraper10) {
+//    this.scraper10Provider = scraper10;
+//  }
+//
+//  @GetMapping("/scrape/all")
+//  public List<Map<String, Object>> getInfo10() throws IOException {
+//      return scraper10Provider.scrapeData();
+//  }
 }

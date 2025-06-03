@@ -5,9 +5,7 @@ import "./style.css";
 import {
   Bot,
   ListRestart,
-  BrainCircuit,
   KeyRound,
-  Rocket,
   Boxes,
 } from "lucide-react";
 

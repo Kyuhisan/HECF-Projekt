@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: matickuhar/hecf-projekt-frontend:latest
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+  backend:
+    image: matickuhar/hecf-projekt-backend:latest
+    volumes:
+      - ./02_Backend/output:/app/output
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/Listings
+
+  mongo:
+    image: mongo:7.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

@@ -16,23 +16,23 @@ public class ec_europa_euScheduler {
         this.fetchLogService = fetchLogService;
     }
 
-//    @Scheduled(fixedDelayString = "${fetch.interval.forthcoming}")
-//    public void fetchForthcomingListings() throws IOException {
-//        System.out.println("Scheduled task: Fetching forthcoming listings.");
-//        listingService.fetchListings("queryForthcoming.json");
-//        fetchLogService.logFetch("ec_europa_eu", "Forthcoming");
-//
-//    }
-//    @Scheduled(fixedDelayString = "${fetch.interval.open}")
-//    public void fetchOpenListings() throws IOException {
-//        System.out.println("Scheduled task: Fetching open listings.");
-//        listingService.fetchListings("queryOpen.json");
-//        fetchLogService.logFetch("ec_europa_eu", "Open");
-//    }
-//    @Scheduled(fixedDelayString = "${fetch.interval.closed}")
-//    public void fetchClosedListings() throws IOException  {
-//        System.out.println("Scheduled task: Fetching closed listings.");
-//        listingService.fetchListings("queryClosed.json");
-//        fetchLogService.logFetch("ec_europa_eu", "Closed");
-//    }
+    @Scheduled(fixedDelayString = "${fetch.interval.forthcoming}")
+    public void fetchForthcomingListings() throws IOException {
+        System.out.println("Scheduled task: Fetching forthcoming listings.");
+        listingService.fetchListings("queryForthcoming.json");
+        fetchLogService.logFetch("ec_europa_eu", "Forthcoming");
+
+    }
+    @Scheduled(fixedDelayString = "${fetch.interval.open}")
+    public void fetchOpenListings() throws IOException {
+        System.out.println("Scheduled task: Fetching open listings.");
+        listingService.fetchListings("queryOpen.json");
+        fetchLogService.logFetch("ec_europa_eu", "Open");
+    }
+    @Scheduled(fixedDelayString = "${fetch.interval.closed}")
+    public void fetchClosedListings() throws IOException  {
+        System.out.println("Scheduled task: Fetching closed listings.");
+        listingService.fetchListings("queryClosed.json");
+        fetchLogService.logFetch("ec_europa_eu", "Closed");
+    }
 }

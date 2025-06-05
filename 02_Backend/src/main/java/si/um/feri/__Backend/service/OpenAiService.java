@@ -44,10 +44,14 @@ public class OpenAiService {
                 .collect(Collectors.joining("\n"));
     }
 
+    // KEYWORDS PATH DEFINED IN APPLICATION.PROPERTIES
+    @Value("${app.output.keywords-path}")
+    private String keywordsPath;
+
     public Mono<String> extractKeywords(String userInput) {
         String formattedKeywordList;
         try {
-            String baseDir = System.getProperty("user.dir") + "/output/keywords/";
+            String baseDir = System.getProperty("user.dir") + keywordsPath;
             formattedKeywordList = loadAllKeywordsFromFiles(List.of(
                     baseDir + "scraper10/keywords.txt",
                     baseDir + "scraper20/keywords.txt",

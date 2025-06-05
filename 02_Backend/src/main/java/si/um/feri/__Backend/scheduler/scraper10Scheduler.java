@@ -15,7 +15,7 @@ public class scraper10Scheduler {
       this.scraper10Provider = scraper10;
         this.fetchLogService = fetchLogService;
     }
-
+//
 //    @Scheduled(fixedDelayString = "${fetch.interval.open}")
 //    public void getInfo10() throws IOException {
 //        System.out.println("Scheduled task: Fetching data from scraper10.");

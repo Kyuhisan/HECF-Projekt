@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -35,11 +36,14 @@ public class ec_europa_euProvider {
     private final ListingRepository listingRepository;
     private final MongoTemplate mongoTemplate;
 
+    // OUTPUT PATH DEFINED IN APPLICATION.PROPERTIES
+    @Value("${app.output.base-path}")
+    private String basePath;
+
     public ec_europa_euProvider(ListingRepository listingRepository, MongoTemplate mongoTemplate) {
         this.listingRepository = listingRepository;
         this.mongoTemplate = mongoTemplate;
     }
-
     public void fetchListings(String queryFileName) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -80,14 +84,36 @@ public class ec_europa_euProvider {
         }
 
         String suffix = queryFileName.replace("query", "ec_europa_eu").replace(".json", "RawData.json");
-        String outputPath = System.getProperty("user.dir") + "/output/rawData/ec_europa_eu/" + suffix;
+        String outputPath = Paths.get(System.getProperty("user.dir"), basePath, "ec_europa_eu", suffix).toString();
 
         saveRawLocally(allPages, outputPath);
-        //saveRawToMongo(allPages, "ec.europa.eu:" + queryFileName.replace("query", "").replace(".json", ""));
+        saveRawToMongo(allPages, "ec.europa.eu:" + queryFileName.replace("query", "").replace(".json", ""));
         saveFilteredToMongo(allResults);
         generateKeywordsFromMongo();
 
         log.info("Finished fetching listings from ec.europa.eu");
+    }
+
+    public void saveRawToMongo(List<String> jsonPages, String provider) throws IOException {
+        mongoTemplate.getCollection("Listings-Raw(ec.europa.eu)").deleteMany(new Document("sourceProvider", provider));
+
+        List<Document> documents = new ArrayList<>();
+
+        for (String pageJson : jsonPages) {
+            JsonNode results = MAPPER.readTree(pageJson).path("results");
+            if (!results.isArray()) continue;
+            for (JsonNode resultNode : results) {
+                Document bsonDoc = Document.parse(resultNode.toString());
+                bsonDoc.put("sourceProvider", provider);
+                documents.add(bsonDoc);
+            }
+        }
+
+        if (!documents.isEmpty()) {
+            mongoTemplate.getCollection("Listings-Raw(ec.europa.eu)").insertMany(documents);
+        }
+
+        log.info("Inserted {} raw documents into MongoDB for provider: {}", documents.size(), provider);
     }
 
     public void saveRawLocally(List<String> jsonPages, String filePath) throws IOException {
@@ -102,28 +128,6 @@ public class ec_europa_euProvider {
         }
         log.info("Saved raw data to: {}", filePath);
     }
-
-//    public void saveRawToMongo(List<String> jsonPages, String provider) throws IOException {
-//        mongoTemplate.getCollection("Listings-Raw(ec.europa.eu)").deleteMany(new Document("sourceProvider", provider));
-//
-//        List<Document> documents = new ArrayList<>();
-//
-//        for (String pageJson : jsonPages) {
-//            JsonNode results = MAPPER.readTree(pageJson).path("results");
-//            if (!results.isArray()) continue;
-//            for (JsonNode resultNode : results) {
-//                Document bsonDoc = Document.parse(resultNode.toString());
-//                bsonDoc.put("sourceProvider", provider);
-//                documents.add(bsonDoc);
-//            }
-//        }
-//
-//        if (!documents.isEmpty()) {
-//            mongoTemplate.getCollection("Listings-Raw(ec.europa.eu)").insertMany(documents);
-//        }
-//
-//        log.info("Inserted {} raw documents into MongoDB for provider: {}", documents.size(), provider);
-//    }
 
     private void saveFilteredToMongo(List<JsonNode> items) throws IOException {
         List<Listing> listingsToSave = new ArrayList<>();

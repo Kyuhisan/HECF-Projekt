@@ -4,9 +4,9 @@
 Aplikacija omogoča filtriranje, pregledovanje in spremljanje aktualnih razpisov na enem mestu, z osredotočenostjo na uporabniku prijazno izkušnjo in hitro iskanje relevantnih informacij.
 ## 📚 Kazalo
 
-- [🛠️ Navodila za namestitev ogrodji](#-navodila-za-namestitev-potrebnih-orodij)
+- [🛠️ Navodila za namestitev potrebinh ogrodji](#-navodila-za-namestitev-potrebnih-orodij)
 - [📦 Navodila za zagon](#-navodila-za-zagon)
-- [🧑‍💻 Navodila za razvijalce](#-lokalni-zagon-in-navodila-za-razvijalce)
+- [🛠️ Lokalni zagon in navodila za razvijalce](#-lokalni-zagon-in-navodila-za-razvijalce)
 - [🧩 Ekipa in info](#-ekipa-in-kontakt)
 
 ### 🌐 Povezava do rešitve  

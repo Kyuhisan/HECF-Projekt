@@ -32,6 +32,8 @@ services:
     image: mongo:7.0
     container_name: mongodb
     restart: always
+    #ports:
+    #  - "${HOST_IP}:${MONGO_PORT}:27017"
     volumes:
       - mongo_data:/data/db
     environment:

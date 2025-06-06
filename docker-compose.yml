@@ -1,32 +1,42 @@
 services:
   frontend:
-    image: hecf-frontend:latest
+    build:
+      context: ./01_Frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_BACKEND_URL: ${BACKEND_URL}
+    image: matickuhar/hecf-frontend:latest
     container_name: hecf-frontend
+    restart: always
     ports:
-      - "${FRONTEND_PORT:-5173}:80"
-    environment:
-      - VITE_BACKEND_URL=${BACKEND_URL:-http://localhost:8080/api}
+      - "${HOST_IP}:${FRONTEND_PORT}:80"
     depends_on:
       - backend
 
   backend:
-    image: hecf-backend:latest
+    build:
+      context: ./02_Backend
+      dockerfile: Dockerfile
+    image: matickuhar/hecf-backend:latest
     container_name: hecf-backend
     volumes:
       - ./02_Backend/output:/app/output
+    restart: always
     ports:
-      - "${BACKEND_PORT:-8080}:8080"
+      - "${HOST_IP}:${BACKEND_PORT}:8080"
     environment:
-      - SPRING_DATA_MONGODB_URI=${MONGO_URI:-mongodb://mongo:27017/Listings}
-      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - SPRING_DATA_MONGODB_URI=${MONGO_URI}
+      - FRONTEND_URL=${FRONTEND_URL}
 
   mongo:
     image: mongo:7.0
     container_name: mongodb
-    ports:
-      - "27017:27017"
+    restart: always
     volumes:
       - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
 
 volumes:
   mongo_data:

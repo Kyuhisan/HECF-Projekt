@@ -1,5 +1,7 @@
 export const extractKeywords = async (text: string): Promise<string[]> => {
-  const response = await fetch("http://localhost:8080/api/openai/keywords", {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  
+  const response = await fetch(`${backendUrl}/openai/keywords`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

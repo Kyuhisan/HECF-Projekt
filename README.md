@@ -1,21 +1,25 @@
-# 🚀 HECF-SmartSearch
+# 🚀 HECF-SmartSearch 
 
 **Pametno iskanje razpisov** – podpora pri iskanju in sledenju razpisom iz programa **Horizon Europe Cascade Funding**.  
-Aplikacija omogoča filtriranje, pregledovanje in spremljanje aktualnih razpisov na enem mestu, z osredotočenostjo na uporabniku prijazno izkušnjo in hitro iskanje relevantnih informacij.
-## 📚 Kazalo
-
-- [🛠️ Navodila za namestitev potrebinh ogrodji](#-navodila-za-namestitev-potrebnih-orodij)
-- [📦 Navodila za zagon](#-navodila-za-zagon)
-- [🛠️ Lokalni zagon in navodila za razvijalce](#-lokalni-zagon-in-navodila-za-razvijalce)
-- [🧩 Ekipa in info](#-ekipa-in-kontakt)
+Aplikacija omogoča filtriranje, pregledovanje in spremljanje aktualnih razpisov na enem mestu, z osredotočenostjo na uporabniku prijazno izkušnjo in hitro iskanje relevantnih informacij. <br>
+<br>
+<img src="ReadmeIMG/ui3.png" alt="" width="800"/> <br>
 
 ### 🌐 Povezava do rešitve  
 🔗 **[HECF-SmartSearch](<VSTAVI-LINK-DO-REŠITVE-TUKAJ>)**
 
+## 📚 Kazalo
+
+- [Navodila za namestitev](#navodila-za-namestitev)
+- [Navodila za zagon](#-navodila-za-zagon)
+- [Lokalni zagon in navodila za razvijalce](#lokalni-zagon-in-navodila-za-razvijalce)
+- [Ekipa in kontakt](#-ekipa-in-kontakt)
+
+
 Naša rešitev podjetjem omogoča jasen, hiter in sproten **pregled nad poslovnimi priložnostmi** – brez vsakodnevnega ročnega iskanja in strahu, da bi kaj zamudili.
 Z uporabo **umetne inteligence**, **samodejnega zbiranja podatkov** in **naprednega filtriranja**, podjetnikom pomagamo najti ustrezne razpise v nekaj sekundah.
 
-<img src="ReadmeIMG/ui.png" alt="" width="800"/> <br>
+<img src="ReadmeIMG/stack.png" alt="" width="800"/> <br>
 
 ## 🔄 Samodejno zbiranje podatkov
 <img src="ReadmeIMG/actomatizacija.PNG" alt="" width="800"/> <br>
@@ -37,10 +41,9 @@ Z uporabo **umetne inteligence**, **samodejnega zbiranja podatkov** in **napredn
 - 📄 **(v razvoju)** Izvoz posameznih razpisov v PDF obliki
 <br>
 <br>
-<br>
 ---
 
-# 🛠️ Navodila za namestitev potrebnih orodij
+ ## Navodila za namestitev
 ### 1. ☕ Java & JDK
 
 Obišči: https://adoptium.net/ <br>
@@ -100,21 +103,45 @@ docker compose version
 
 # 📦 Navodila za zagon
 <img src="ReadmeIMG/DOCKER.png" alt="DOKER" width="200"/> <br>
- Namesto lokalnega zagona, lahko vse komponente zaženeš z Docker Compose:
+ Namesto lokalnega zagona, lahko vse komponente zaženeš z Docker Compose: 
+ <br>
+ 📁 HECF-Projekt/ ustvari .env datoteko 
+
+ ```bash
+# Frontend konfiguracija deafult react-vite port/url 5173
+FRONTEND_PORT=
+FRONTEND_URL=
+
+# Backend konfiguracija deafult springboot port/url 8080
+BACKEND_PORT=
+BACKEND_URL= #.../api
+
+# MongoDB konfiguracija
+# Ustvari mongo db kolekcijo
+MONGO_PORT=
+MONGO_URI=
+MONGO_INITDB_ROOT_USERNAME=
+MONGO_INITDB_ROOT_PASSWORD=
+
+# OpenAI API ključ
+OPENAI_API_KEY= # Pojdi na https://openrouter.ai/settings/keys 
+```
  
-  
 
 ```bash
 cd HECF-Projekt/
-docker-compose up
+ # Zgradi slike
+docker-compose --env-file .env build
+
+# Zaženi vse komponente v ozadju
+docker-compose --env-file .env up -d
 ```
 <br>
 <br>
 
 
 ---
-# 🛠️ Lokalni zagon in navodila za razvijalce
-
+## Lokalni zagon in navodila za razvijalce
 ## 🌐 FRONTEND
 
 ### 🛠️ Orodja
@@ -155,13 +182,19 @@ docker-compose up
     ```bash
     spring.data.mongodb.uri=mongodb+srv://<uporabnik>:<geslo>@<cluster-url>/<ime-baze>?retryWrites=true&w=majority&appName=<appName>
     ```
+2. 🔑 Pojdi na https://openrouter.ai/settings/keys ; kreiraj account in svoj api 
+        in v datoteko  **application.propertes** dodaj naslednje:
+    ```bash
+    openai.api.key= your-ai-api-key-here
+    openai.api.url=  your-ai-api-url-here
+    ```
 
-2. 📁Pojdi v mapo z ukazom:
+3. 📁Pojdi v mapo z ukazom:
     ```bash
     cd 02_Backend
     ```
     
-3. ▶️ Zaženi aplikacijo:
+4. ▶️ Zaženi aplikacijo:
     ```bash
     mvn spring-boot:run
     ```

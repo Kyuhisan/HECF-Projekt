@@ -3,7 +3,7 @@
 **Pametno iskanje razpisov** – podpora pri iskanju in sledenju razpisom iz programa **Horizon Europe Cascade Funding**.  
 Aplikacija omogoča filtriranje, pregledovanje in spremljanje aktualnih razpisov na enem mestu, z osredotočenostjo na uporabniku prijazno izkušnjo in hitro iskanje relevantnih informacij. <br>
 <br>
-<img src="ReadmeIMG/ui3.png" alt="" width="800"/> <br>
+<img src="ReadmeIMG/ui3.PNG" alt="" width="800"/> <br>
 
 ### 🌐 Povezava do rešitve  
 🔗 **[HECF-SmartSearch](<VSTAVI-LINK-DO-REŠITVE-TUKAJ>)**
@@ -19,7 +19,7 @@ Aplikacija omogoča filtriranje, pregledovanje in spremljanje aktualnih razpisov
 Naša rešitev podjetjem omogoča jasen, hiter in sproten **pregled nad poslovnimi priložnostmi** – brez vsakodnevnega ročnega iskanja in strahu, da bi kaj zamudili.
 Z uporabo **umetne inteligence**, **samodejnega zbiranja podatkov** in **naprednega filtriranja**, podjetnikom pomagamo najti ustrezne razpise v nekaj sekundah.
 
-<img src="ReadmeIMG/stack.png" alt="" width="800"/> <br>
+<img src="ReadmeIMG/stack.PNG" alt="" width="800"/> <br>
 
 ## 🔄 Samodejno zbiranje podatkov
 <img src="ReadmeIMG/actomatizacija.PNG" alt="" width="800"/> <br>

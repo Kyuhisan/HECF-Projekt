@@ -75,4 +75,4 @@ jobs:
       - name: Build and Test (JUnit)
         run: ./mvnw test
         env:
-          SPRING_DATA_MONGODB_URI: mongodb://localhost:27017/Listings
+          SPRING_DATA_MONGODB_URI: ${{ secrets.SPRING_DATA_MONGODB_URI }}

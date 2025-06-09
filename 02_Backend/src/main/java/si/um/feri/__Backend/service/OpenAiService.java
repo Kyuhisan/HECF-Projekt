@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 public class OpenAiService {
 
     @Value("${openai.api.key}")
-    private String apiKey = "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";
+    private String apiKey;
 
     @Value("${openai.api.url}")
-    private String apiUrl ="https://openrouter.ai/api/v1/chat/completions";
+    private String apiUrl;
 
     private final WebClient webClient = WebClient.builder().build();
 

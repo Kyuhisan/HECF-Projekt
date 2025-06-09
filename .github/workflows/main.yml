@@ -37,6 +37,17 @@ jobs:
       run:
         working-directory: 02_Backend
 
+    services:
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.adminCommand(\"ping\")'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -50,5 +61,18 @@ jobs:
       - name: Grant execute permission for Maven Wrapper
         run: chmod +x mvnw
 
+      - name: Wait for MongoDB to be ready
+        run: |
+          for i in {1..10}; do
+            if mongosh --eval "db.adminCommand('ping')" > /dev/null 2>&1; then
+              echo "MongoDB is ready"
+              break
+            fi
+            echo "Waiting for MongoDB..."
+            sleep 5
+          done
+
       - name: Build and Test (JUnit)
         run: ./mvnw test
+        env:
+          SPRING_DATA_MONGODB_URI: mongodb://localhost:27017/Listings

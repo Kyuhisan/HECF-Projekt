@@ -9,7 +9,6 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/listings/ec_europa_eu")
-// @CrossOrigin(origins = "${spring.mvc.cors.allowed-origins}")
 @CrossOrigin
 public class ec_europa_euController {
     private final ec_europa_euProvider listingService;

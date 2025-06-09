@@ -6,7 +6,6 @@ import si.um.feri.__Backend.service.OpenAiService;
 
 @RestController
 @RequestMapping("/api/openai")
-// @CrossOrigin(origins = "${spring.mvc.cors.allowed-origins}")
 @CrossOrigin
 public class OpenAiController {
 

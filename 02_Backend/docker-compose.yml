@@ -14,18 +14,31 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://testUser:testUserPassword@mongo:27017/hecf?authSource=admin
     depends_on:
       - mongo
+      - mongo-seed
 
   mongo:
     image: mongo:7.0
     container_name: mongodb
     restart: always
-    #ports:
-    #  - "27017:27017"
+    ports:
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=testUser
       - MONGO_INITDB_ROOT_PASSWORD=testUserPassword
+
+  mongo-seed:
+    image: mongo:7.0
+    depends_on:
+      - mongo
+    volumes:
+      - ./mongo-init:/mongo-init
+    entrypoint: [ "sh", "/mongo-init/init.sh" ]
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=testUser
+      - MONGO_INITDB_ROOT_PASSWORD=testUserPassword
+    restart: "no"
 
 volumes:
   mongo_data:

@@ -1,7 +1,7 @@
 import { backendUrl } from "../api";
 
 export const extractKeywords = async (text: string): Promise<string[]> => {
-  const response = await fetch(`${backendUrl}/openai/keywords`, {
+  const response = await fetch(`http://${backendUrl}/api/openai/keywords`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

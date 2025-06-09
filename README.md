@@ -10,7 +10,7 @@ Aplikacija omogoča filtriranje, pregledovanje in spremljanje aktualnih razpisov
 
 ## 📚 Kazalo
 
-- [Navodila za namestitev](#navodila-za-namestitev)
+- [Navodila za namestitev](#-navodila-za-namestitev)
 - [Navodila za zagon](#-navodila-za-zagon)
 - [Lokalni zagon in navodila za razvijalce](#lokalni-zagon-in-navodila-za-razvijalce)
 - [Ekipa in kontakt](#-ekipa-in-kontakt)
@@ -43,7 +43,7 @@ Z uporabo **umetne inteligence**, **samodejnega zbiranja podatkov** in **napredn
 <br>
 ---
 
- ## Navodila za namestitev
+ ## 🔧 Navodila za namestitev
 ### 1. ☕ Java & JDK
 
 Obišči: https://adoptium.net/ <br>

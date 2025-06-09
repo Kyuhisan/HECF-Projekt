@@ -6,10 +6,15 @@ RUN npm install
 
 COPY . .
 
-ARG VITE_BACKEND_URL
-ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
-
 RUN npm run build
 
 FROM nginx:stable-alpine
+
+# Copy built files
 COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copy runtime env injector
+COPY env.sh /docker-entrypoint.d/env.sh
+RUN chmod +x /docker-entrypoint.d/env.sh
+
+EXPOSE 80

@@ -7,7 +7,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/listings")
-@CrossOrigin(origins = "${spring.mvc.cors.allowed-origins}")
+// @CrossOrigin(origins = "${spring.mvc.cors.allowed-origins}")
+@CrossOrigin
 public class ListingController {
     private final ListingService listingService;
     public ListingController(ListingService service) {

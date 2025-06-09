@@ -11,7 +11,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/listings/scraper20")
-@CrossOrigin(origins = "${spring.mvc.cors.allowed-origins}")
+// @CrossOrigin(origins = "${spring.mvc.cors.allowed-origins}")
+@CrossOrigin
 public class scraper20Controller {
 //    private  final scraper20Provider scraper20Provider;
 //    public scraper20Controller(scraper20Provider scraper20) {

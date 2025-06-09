@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import si.um.feri.__Backend.service.provider.scraper20Provider;
+//import si.um.feri.__Backend.service.provider.scraper20Provider;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;

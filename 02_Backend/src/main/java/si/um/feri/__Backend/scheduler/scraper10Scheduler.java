@@ -3,7 +3,7 @@ package si.um.feri.__Backend.scheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import si.um.feri.__Backend.service.FetchLogService;
-import si.um.feri.__Backend.service.provider.scraper10Provider;
+//import si.um.feri.__Backend.service.provider.scraper10Provider;
 import java.io.IOException;
 
 @Component

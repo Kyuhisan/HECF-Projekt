@@ -8,13 +8,13 @@ import java.io.IOException;
 
 @Component
 public class scraper10Scheduler {
-    private final scraper10Provider scraper10Provider;
-    private final FetchLogService fetchLogService;
+//    private final scraper10Provider scraper10Provider;
+//    private final FetchLogService fetchLogService;
 
-    public scraper10Scheduler(scraper10Provider scraper10, FetchLogService fetchLogService) {
-      this.scraper10Provider = scraper10;
-        this.fetchLogService = fetchLogService;
-    }
+//    public scraper10Scheduler(scraper10Provider scraper10, FetchLogService fetchLogService) {
+//      this.scraper10Provider = scraper10;
+//        this.fetchLogService = fetchLogService;
+//    }
 //
 //    @Scheduled(fixedDelayString = "${fetch.interval.open}")
 //    public void getInfo10() throws IOException {

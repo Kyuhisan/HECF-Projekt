@@ -12,7 +12,6 @@ services:
       - "8080:8080"
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://testUser:testUserPassword@mongo:27017/hecf?authSource=admin
-      - OPENAI_API_KEY=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
     depends_on:
       - mongo
 

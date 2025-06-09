@@ -1,6 +1,6 @@
+import { backendUrl } from "../api";
+
 export const extractKeywords = async (text: string): Promise<string[]> => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  
   const response = await fetch(`${backendUrl}/openai/keywords`, {
     method: "POST",
     headers: {

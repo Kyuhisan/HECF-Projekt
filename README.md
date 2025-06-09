@@ -105,36 +105,65 @@ docker compose version
 <img src="ReadmeIMG/DOCKER.png" alt="DOKER" width="200"/> <br>
  Namesto lokalnega zagona, lahko vse komponente zaženeš z Docker Compose: 
  <br>
- 📁 HECF-Projekt/ ustvari .env datoteko 
+ 📁 HECF-Projekt/02_Backend/docker-compose.yml
+
+V docker-compose.yml konfiguriramo IP, PORT in PODATKE za povezavo do mongodb baze.
 
  ```bash
-# Frontend konfiguracija deafult react-vite port/url 5173
-FRONTEND_PORT=
-FRONTEND_URL=
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: matickuhar/hecf-backend:latest
+    container_name: hecf-backend
+    volumes:
+      - ./output:/app/output
+    restart: always
+    ports:
+      - "**8080**:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://<**testUser**>:<**testUserPassword**>@mongo:27017/hecf?authSource=admin
+    depends_on:
+      - mongo
+      - mongo-seed
 
-# Backend konfiguracija deafult springboot port/url 8080
-BACKEND_PORT=
-BACKEND_URL= #.../api
+  mongo:
+    image: mongo:7.0
+    container_name: mongodb
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=<**testUser**>
+      - MONGO_INITDB_ROOT_PASSWORD=<**testUserPassword**>
 
-# MongoDB konfiguracija
-# Ustvari mongo db kolekcijo
-MONGO_PORT=
-MONGO_URI=
-MONGO_INITDB_ROOT_USERNAME=
-MONGO_INITDB_ROOT_PASSWORD=
+  mongo-seed:
+    image: mongo:7.0
+    depends_on:
+      - mongo
+    volumes:
+      - ./mongo-init:/mongo-init
+    entrypoint: [ "sh", "/mongo-init/init.sh" ]
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=<**testUser**>
+      - MONGO_INITDB_ROOT_PASSWORD=<**testUserPassword**>
+    restart: "no"
 
-# OpenAI API ključ
-OPENAI_API_KEY= # Pojdi na https://openrouter.ai/settings/keys 
+volumes:
+  mongo_data:
 ```
- 
+
+Konfiguracijo zgradimo in poženemo z ukazom 
 
 ```bash
-cd HECF-Projekt/
- # Zgradi slike
-docker-compose --env-file .env build
+docker-compose -d up --build
+```
 
-# Zaženi vse komponente v ozadju
-docker-compose --env-file .env up -d
+Z delujočim backendom, nato zgradimo še frontend in ga poženemo
+```bash
+docker build -t matickuhar/hecf-frontend:latest .\01_Frontend\
+docker run -d -p <**IP:PORT**>:80 -e API_URL="<IP:PORT>" matickuhar/hecf-frontend:latest
 ```
 <br>
 <br>

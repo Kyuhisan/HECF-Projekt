@@ -157,7 +157,13 @@ volumes:
 Konfiguracijo zgradimo in poženemo z ukazom 
 
 ```bash
-docker-compose -d up --build
+docker-compose up -d --build
+```
+
+Ali pa poženemo z privzeto konfiguracijo brez izgradnje
+
+```bash
+docker-compose up -d
 ```
 
 Z delujočim backendom, nato zgradimo še frontend in ga poženemo

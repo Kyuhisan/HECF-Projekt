@@ -1,5 +1,5 @@
 services:
-  backend:
+  backend: 
     image: matickuhar/hecf-backend:3.0
     container_name: hecf-backend
     volumes:

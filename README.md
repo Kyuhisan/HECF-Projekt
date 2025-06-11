@@ -6,7 +6,7 @@ Aplikacija omogoča filtriranje, pregledovanje in spremljanje aktualnih razpisov
 <img src="ReadmeIMG/ui3.PNG" alt="" width="800"/> <br>
 
 ### 🌐 Povezava do rešitve  
-🔗 **[HECF-SmartSearch](<VSTAVI-LINK-DO-REŠITVE-TUKAJ>)**
+🔗 **[HECF-SmartSearch](http://164.8.250.21:3000/)**
 
 ## 📚 Kazalo
 
@@ -116,7 +116,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: matickuhar/hecf-backend:latest
+    image: matickuhar/hecf-backend:3.0
     container_name: hecf-backend
     volumes:
       - ./output:/app/output
@@ -167,7 +167,7 @@ docker-compose up -d --build
 
 Z delujočim backendom, nato še prenesemo in poženemo frontend z ustreznimi parametri
 ```bash
-docker run -d -p <**IP:PORT**>:80 -e API_URL="<IP:PORT>" matickuhar/hecf-frontend:latest
+docker run -d -p <**IP:PORT**>:80 -e API_URL="<IP:PORT>" matickuhar/hecf-frontend:1.0
 ```
 <br>
 
@@ -178,12 +178,12 @@ Najprej zapakiramo backend z uporabo Maven package orodja
 Nato pa zgradimo backend in frontend docker sliki
 ```bash
 docker-compose up -d --build
-docker build -t matickuhar/hecf-frontend:latest .\01_Frontend\
+docker build -t matickuhar/hecf-frontend:1.0 .\01_Frontend\
 ```
 
 Poženemo frontend z ukazom:
 ```bash
-docker run -d -p <**IP:PORT**>:80 -e API_URL="<IP:PORT>" matickuhar/hecf-frontend:latest
+docker run -d -p <**IP:PORT**>:80 -e API_URL="<IP:PORT>" matickuhar/hecf-frontend:1.0
 ```
 
 ---

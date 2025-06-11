@@ -1,0 +1,47 @@
+Ime Projekta:  
+HECF SmartSearch
+
+Kratek plot:  
+Pametna informacijska rešitev za hitro in enostavno iskanje poslovnih priložnosti iz EU razpisov, ki s pomočjo umetne inteligence in 
+avtomatiziranega zbiranja podatkov uporabnikom omogoča hiter dostop do točnih in relevantnih informacij – brez ročnega dela in zamujenih priložnosti.
+
+Leto izdelave: 2025
+
+Avtorji:  
+Tilen Brunec  
+Matic Kuhar  
+Patrik Bevc
+
+Domača stran:  
+http://164.8.250.21:3000/
+
+Vir podatkov:  
+https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/calls-for-proposals
+https://cascadefunding.eu/open-calls
+https://hub.getonepass.eu/search/opportunities
+
+Koda:  
+https://github.com/Kyuhisan/HECF-Projekt
+
+Kategorizacija:  
+Celovita informacijska rešitev  
+Spletna aplikacija  
+Predstavitvena spletna stran
+
+
+Oznake:  
+OdprtiPodatki, ReactTS, MongoDB, SpringBoot, Java, NodeJS, Scrum, AgilenRazvoj, GitHub, UporabaAI, Docker, REST, Vite, Elasticsearch, Selenium, Lombok
+
+Opis projekta:
+Naš projekt je pametna informacijska rešitev, ki podjetjem omogoča hitro, zanesljivo in ciljno iskanje poslovnih priložnosti iz evropskih razpisov – predvsem 
+v okviru programa Horizon Europe Cascade Funding. Sistem deluje avtomatizirano: redno zajema podatke iz preverjenih spletnih virov z uporabo naprednih 
+tehnologij ter jih združuje v enoten, pregleden vmesnik.
+
+Ključna prednost rešitve je integrirani AI asistent, ki razume naravni jezik – tako v slovenščini kot angleščini. Uporabnik preprosto opiše, kaj išče, 
+sistem pa z analizo vsebine predlaga najbolj relevantne priložnosti.
+
+Rezultate je mogoče dodatno filtrirati po datumu, industriji, tehnologiji in statusu (odprt, zaprt, prihajajoč), prikazani pa so v vizualno prijazni 
+obliki – kot seznam ali mreža.
+
+Rešitev prihrani čas, zmanjša tveganje zamujenih priložnosti in deluje kot poslovni pomočnik, ki skrbi, da nobena pomembna razpisna priložnost ne ostane 
+spregledana.

@@ -1,5 +1,5 @@
-# 🚀 HECF-SmartSearch 
-
+#  HECF-SmartSearch 
+<img src="ReadmeIMG/horizontal.png" width="800"> <br>
 **Pametno iskanje razpisov** – podpora pri iskanju in sledenju razpisom iz programa **Horizon Europe Cascade Funding**.  
 Aplikacija omogoča filtriranje, pregledovanje in spremljanje aktualnih razpisov na enem mestu, z osredotočenostjo na uporabniku prijazno izkušnjo in hitro iskanje relevantnih informacij. <br>
 <br>

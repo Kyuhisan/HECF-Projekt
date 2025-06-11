@@ -107,6 +107,7 @@ docker compose version
  <br>
  📁 HECF-Projekt/02_Backend/docker-compose.yml
 
+## 1. Windows
 V docker-compose.yml konfiguriramo IP, PORT in PODATKE za povezavo do mongodb baze.
 
  ```bash
@@ -121,7 +122,7 @@ services:
       - ./output:/app/output
     restart: always
     ports:
-      - "**8080**:8080"
+      - "<**8080**>:8080"
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://<**testUser**>:<**testUserPassword**>@mongo:27017/hecf?authSource=admin
     depends_on:
@@ -154,26 +155,36 @@ volumes:
   mongo_data:
 ```
 
-Konfiguracijo zgradimo in poženemo z ukazom 
+Konfiguriran docker-compose nato poženemo z ukazom:
+```bash
+docker-compose -d
+```
 
+Po potrebi backend lahko tudi zgradimo in poženemo z ukazom 
 ```bash
 docker-compose up -d --build
 ```
 
-Ali pa poženemo z privzeto konfiguracijo brez izgradnje
-
+Z delujočim backendom, nato še prenesemo in poženemo frontend z ustreznimi parametri
 ```bash
-docker-compose up -d
-```
-
-Z delujočim backendom, nato zgradimo še frontend in ga poženemo
-```bash
-docker build -t matickuhar/hecf-frontend:latest .\01_Frontend\
 docker run -d -p <**IP:PORT**>:80 -e API_URL="<IP:PORT>" matickuhar/hecf-frontend:latest
 ```
 <br>
-<br>
 
+2. Linux/MacOS
+Zahteva gradnjo backend in frontend projekta z ukazi:
+Najprej zapakiramo backend z uporabo Maven package orodja
+
+Nato pa zgradimo backend in frontend docker sliki
+```bash
+docker-compose up -d --build
+docker build -t matickuhar/hecf-frontend:latest .\01_Frontend\
+```
+
+Poženemo frontend z ukazom:
+```bash
+docker run -d -p <**IP:PORT**>:80 -e API_URL="<IP:PORT>" matickuhar/hecf-frontend:latest
+```
 
 ---
 ## Lokalni zagon in navodila za razvijalce

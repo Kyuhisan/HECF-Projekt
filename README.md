@@ -171,7 +171,7 @@ docker run -d -p <**IP:PORT**>:80 -e API_URL="<IP:PORT>" matickuhar/hecf-fronten
 ```
 <br>
 
-2. Linux/MacOS
+## 2. Linux/MacOS
 Zahteva gradnjo backend in frontend projekta z ukazi:
 Najprej zapakiramo backend z uporabo Maven package orodja
 

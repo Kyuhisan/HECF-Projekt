@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
 import "./style.css";
 import SmartSearch from "./SmartSearch";
+import NotifyPopup from "./NotifyPopup";
 import type { Listing } from "../App";
-import { CalendarClock, HandCoins, CodeXml,  KeyRound, LayoutGrid, Rows2, SearchX } from "lucide-react";
+import {
+  CalendarClock,
+  HandCoins,
+  CodeXml,
+  KeyRound,
+  LayoutGrid,
+  Rows2,
+  SearchX,
+  MailPlus,
+} from "lucide-react";
+
 
 type Props = {
   filters: {
     industries: string[];
     status: string[];
     source: string[];
-    budget: {min: number; max: number};
+    budget: { min: number; max: number };
     deadLine: string;
   };
   listings: Listing[];
@@ -38,27 +49,47 @@ const MainContent = ({ filters, listings }: Props) => {
   const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 15;
   const resetPage = () => setCurrentPage(1);
+  const [showNotifyPopup, setShowNotifyPopup] = useState(false);
 
   useEffect(() => {
-      if (listings.length === 0) {
-    setIsLoading(true);
-    setFilteredListings([]);
-    return;
-  }
-  setIsLoading(false);
+    if (listings.length === 0) {
+      setIsLoading(true);
+      setFilteredListings([]);
+      return;
+    }
+    setIsLoading(false);
     const results = listings.filter((listing) => {
-      const matchesIndustries = filters.industries.length === 0 || (listing.industries !== null && filters.industries?.every((ind) => listing.industries?.includes(ind)));
-      const matchesStatus = !filters.status || filters.status.length === 0 || filters.status.includes(listing.status);
-      const matchesSource = filters.source.length === 0 || filters.source.includes(listing.source);
+      const matchesIndustries =
+        filters.industries.length === 0 ||
+        (listing.industries !== null &&
+          filters.industries?.every((ind) =>
+            listing.industries?.includes(ind)
+          ));
+      const matchesStatus =
+        !filters.status ||
+        filters.status.length === 0 ||
+        filters.status.includes(listing.status);
+      const matchesSource =
+        filters.source.length === 0 || filters.source.includes(listing.source);
       const listingBudget = Number(listing.budget);
-      const matchesBudget = isNaN(listingBudget) || (listingBudget >= filters.budget.min && listingBudget <= filters.budget.max);
-      const matchesDeadline = !filters.deadLine || listing.deadlineDate === filters.deadLine;
+      const matchesBudget =
+        isNaN(listingBudget) ||
+        (listingBudget >= filters.budget.min &&
+          listingBudget <= filters.budget.max);
+      const matchesDeadline =
+        !filters.deadLine || listing.deadlineDate === filters.deadLine;
 
       const lowerDescription = listing.description?.toLowerCase() ?? "";
-      const lowerTechnologies = (listing.technologies ?? []).map((t) => t.toLowerCase());
-      const lowerIndustries = (listing.industries ?? []).map((i) => i.toLowerCase());
-      const keywordMatch = searchKeywords.length === 0 || searchKeywords.some((k) => {
-        const kw = k.toLowerCase();
+      const lowerTechnologies = (listing.technologies ?? []).map((t) =>
+        t.toLowerCase()
+      );
+      const lowerIndustries = (listing.industries ?? []).map((i) =>
+        i.toLowerCase()
+      );
+      const keywordMatch =
+        searchKeywords.length === 0 ||
+        searchKeywords.some((k) => {
+          const kw = k.toLowerCase();
           return (
             lowerDescription.includes(" " + kw + " ") ||
             lowerTechnologies.includes(" " + kw + " ") ||
@@ -90,23 +121,35 @@ const MainContent = ({ filters, listings }: Props) => {
   );
 
   return (
+    <>
     <div className="main-content right-shift">
       <div className="content-wrapper">
         {/* Gumb za preklop med prikazom grid ali row */}
-          <div className="view-toggle-buttons">
-            <button 
-              className={`toggle-button ${viewMode === "grid" ? "active" : ""}`} 
-              onClick={() => setViewMode("grid")} 
-              title="Grid view">
+
+        <div className="view-toggle-buttons">
+          <div className="mailing-header">
+            <button className="mail-button" onClick={() => setShowNotifyPopup(true)}>
+  Get notified <MailPlus size={16} style={{ marginLeft: "5px" }} />
+</button>
+          </div>
+
+          <div className="right-buttons">
+            <button
+              className={`toggle-button ${viewMode === "grid" ? "active" : ""}`}
+              onClick={() => setViewMode("grid")}
+              title="Grid view"
+            >
               <LayoutGrid />
             </button>
-            <button 
-              className={`toggle-button ${viewMode === "list" ? "active" : ""}`} 
-              onClick={() => setViewMode("list")} 
-              title="List view">
+            <button
+              className={`toggle-button ${viewMode === "list" ? "active" : ""}`}
+              onClick={() => setViewMode("list")}
+              title="List view"
+            >
               <Rows2 />
             </button>
           </div>
+        </div>
 
         {/* Dodal SmartSearch komponento za api */}
         <SmartSearch
@@ -114,14 +157,17 @@ const MainContent = ({ filters, listings }: Props) => {
           onChange={setSearchTerm}
           onKeywordsChange={setSearchKeywords}
           onAllKeywordsChange={setAllKeywords}
-           onInteraction={resetPage}
+          onInteraction={resetPage}
         ></SmartSearch>
         {/* Dodal SmartSearch komponento za api */}
 
-        <div className={`results ${viewMode === "grid" ? "grid-view" : "list-view"}`}>
+        <div
+          className={`results ${
+            viewMode === "grid" ? "grid-view" : "list-view"
+          }`}
+        >
           {currentListings.map((listing) => (
             <div className="result-item" key={listing.id}>
-              
               {/* Header z naslovom in statusom/datumom */}
               <div className="card-header">
                 <h4 className="card-title">{listing.title}</h4>
@@ -162,7 +208,7 @@ const MainContent = ({ filters, listings }: Props) => {
                               index % 3
                             }`}
                           >
-                            <KeyRound size={14} /> {industry} 
+                            <KeyRound size={14} /> {industry}
                           </span>
                         ))}
                       </div>
@@ -177,7 +223,10 @@ const MainContent = ({ filters, listings }: Props) => {
                             key={index}
                             className={`tag-badge tech-tag tech-${index % 3}`}
                           >
-                          <KeyRound size={14} /> {tech.length > 120 ? tech.substring(0, 120) + "..." : tech} 
+                            <KeyRound size={14} />{" "}
+                            {tech.length > 120
+                              ? tech.substring(0, 120) + "..."
+                              : tech}
                           </span>
                         ))}
                       </div>
@@ -211,7 +260,7 @@ const MainContent = ({ filters, listings }: Props) => {
             </div>
           ))}
         </div>
-       
+
         {isLoading ? (
           <div className="no-results">
             <div className="loading-dots">
@@ -221,7 +270,7 @@ const MainContent = ({ filters, listings }: Props) => {
             </div>
             <p>Loading listings...</p>
           </div>
-            ) : currentListings.length === 0 ? (
+        ) : currentListings.length === 0 ? (
           <div className="no-results">
             <SearchX size={24} />
             <p>No listings found matching your criteria.</p>
@@ -250,6 +299,15 @@ const MainContent = ({ filters, listings }: Props) => {
         )}
       </div>
     </div>
+      {showNotifyPopup && (
+      <NotifyPopup
+        onClose={() => setShowNotifyPopup(false)}
+        allIndustries={listings.flatMap((l) => l.industries ?? []).filter((v, i, a) => a.indexOf(v) === i)}
+        allTechnologies={listings.flatMap((l) => l.technologies ?? []).filter((v, i, a) => a.indexOf(v) === i)}
+      />
+    )}
+  </>
+    
   );
 };
 

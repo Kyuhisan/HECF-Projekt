@@ -406,7 +406,7 @@ body {
   border-color: #8bc34a;
 }
 .industry-tag.industry-2 {
-   background: #fce4ec;
+  background: #fce4ec;
   color: #ad1457;
   border-color: #e91e63;
 }
@@ -1127,8 +1127,14 @@ body {
 /* Ikone za preklop pogleda – skupaj */
 .view-toggle-buttons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
+}
+
+.right-buttons {
+  display: flex;
+  gap: 0.1rem;
 }
 
 .toggle-button {
@@ -1148,6 +1154,29 @@ body {
   cursor: pointer;
   margin-right: 1px;
   margin-left: 1px;
+}
+.mail-button {
+  background-color: #3b77f7;
+  color: white;
+  font-weight: 500;
+  padding: 8px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  width: auto;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+  margin-right: 1px;
+  margin-left: 1px;
+}
+.mail-button:hover {
+  background-color: #6daffc;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .toggle-button:hover {
@@ -1178,4 +1207,170 @@ body {
 .list-view {
   display: flex;
   flex-direction: column;
+}
+
+/* popup css*/
+/* Zatemnitev ozadja */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  display: flex;
+  justify-content: flex-end; /* porinemo desno */
+}
+
+/* Sam popup panel */
+.popup-content {
+  background-color: white;
+  width: 1000px;
+  max-width: 90%;
+  height: 100%;
+  padding: 2rem;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  position: relative;
+
+  /* ANIMACIJA */
+  transform: translateX(100%);
+  animation: slideIn 0.3s ease-out forwards;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+/* Slide-in animacija */
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Gumbi + elementi */
+.popup-content h2 {
+  margin-bottom: 1rem;
+}
+
+.popup-content input {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.tag.selected {
+  background-color: #3b77f7;
+  color: white;
+  border-color: #3b77f7;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-actions button {
+  flex: 1;
+  padding: 0.6rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  background-color: #3b77f7;
+  color: white;
+  padding-right: 50px;
+  padding-left: 50px;
+}
+.popup-actions button:hover {
+  background-color: #6daffc;
+}
+
+.popup-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.popup-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #3b77f7;
+}
+
+.popup-subtitle {
+  color: #555;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+.form-group-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-top: 1rem;
+}
+.form-group {
+  margin-bottom: 1.5rem;
+  background-color: #fafafa;
+  padding: 1rem;
+  border-radius: 12px;
+  width: 80%;
+}
+
+.input-label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 1rem;
+}
+.close-button {
+  background: none;
+  border: none;
+  color: #3b77f7;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: #1d4ed8;
 }

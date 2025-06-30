@@ -18,7 +18,8 @@
     "react": "^19.1.0",
     "react-datepicker": "^8.4.0",
     "react-dom": "^19.1.0",
-    "rsuite": "^5.82.0"
+    "rsuite": "^5.82.0",
+    "sweetalert2": "^11.22.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
